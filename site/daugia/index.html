@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông báo đấu giá quyền sử dụng đất — Bắc Sông Hiếu GĐ2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EEE3;
+    --paper-2:#EAE6D6;
+    --navy:#1B3448;
+    --navy-2:#0F2431;
+    --navy-3: #274A63;
+    --gold:#B07F2A;
+    --gold-soft:#E8CD8E;
+    --brick:#9C3D2E;
+    --ink:#242219;
+    --ink-soft:#5C5748;
+    --line:#D6CDB2;
+    --line-2: rgba(27,52,72,0.14);
+    --radius: 3px;
+    --serif: 'Noto Serif', serif;
+    --sans: 'Inter', sans-serif;
+    --mono: 'Roboto Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  ::selection{background:var(--gold-soft);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background:var(--navy);
+    color:#F3EFE3;
+    overflow:hidden;
+    padding: 44px 20px 34px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(232,205,142,.09) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(90deg, rgba(232,205,142,.09) 0 1px, transparent 1px 64px);
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,0.1));
+  }
+  .hero-inner{ position:relative; max-width:980px; margin:0 auto; }
+  .kicker{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.05em;
+    color:var(--gold-soft); display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  }
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--gold-soft); display:inline-block;}
+  h1.title{
+    font-family:var(--serif); font-weight:600; font-size:clamp(26px,4.2vw,40px);
+    margin:0 0 8px; line-height:1.18; max-width:16ch;
+  }
+  .subtitle{
+    font-size:16px; color:#D8CDA f; color:#DCD3BE; max-width:56ch; margin:0 0 26px;
+  }
+  .stats-row{ display:flex; flex-wrap:wrap; gap:0; border-top:1px solid rgba(232,205,142,.25); }
+  .stat{
+    flex:1 1 150px; padding:16px 18px 4px 0; border-right:1px solid rgba(232,205,142,.2);
+    min-width:140px;
+  }
+  .stat:last-child{border-right:none;}
+  .stat .num{ font-family:var(--serif); font-size:22px; font-weight:600; color:#fff; }
+  .stat .lbl{ font-size:11.5px; color:#B9AE8F; margin-top:2px; }
+
+  .countdown-wrap{
+    margin-top:26px; border:1px solid rgba(232,205,142,.35); background:rgba(255,255,255,.03);
+    padding:14px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+  .countdown-label{ font-size:13px; color:#DCD3BE; }
+  .countdown-nums{ display:flex; gap:14px; font-family:var(--mono); }
+  .countdown-nums div{ text-align:center; }
+  .countdown-nums .n{ font-size:22px; color:var(--gold-soft); font-weight:500; }
+  .countdown-nums .u{ font-size:10px; color:#B9AE8F; letter-spacing:.05em; }
+
+  /* ---------- TABS NAV ---------- */
+  .tabs-bar{
+    position:sticky; top:0; z-index:20; background:var(--paper);
+    border-bottom:1px solid var(--line);
+    overflow-x:auto; white-space:nowrap;
+  }
+  .tabs-bar-inner{ max-width:980px; margin:0 auto; display:flex; }
+  .tab-btn{
+    font-family:var(--sans); font-size:14px; font-weight:500; color:var(--ink-soft);
+    background:none; border:none; padding:14px 16px; cursor:pointer; position:relative;
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{ color:var(--navy); border-bottom-color:var(--gold); font-weight:600;}
+  .tab-btn:hover{ color:var(--navy); }
+
+  main{ max-width:980px; margin:0 auto; padding:34px 20px 80px; }
+  .panel{ display:none; animation:fade .25s ease; }
+  .panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+  .section-head{ display:flex; align-items:baseline; gap:12px; margin:0 0 16px; }
+  .section-head h2{ font-family:var(--serif); font-size:22px; font-weight:600; color:var(--navy); margin:0;}
+  .section-head .count{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); }
+
+  .card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; }
+  .card + .card{ margin-top:14px; }
+  .lede{ font-size:15.5px; color:var(--ink); max-width:70ch; margin:0 0 18px; }
+  .lede b{color:var(--navy);}
+
+  .info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:6px; }
+  .info-grid .card{ padding:14px 16px; }
+  .info-grid .k{ font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--gold); font-weight:600; margin-bottom:4px;}
+  .info-grid .v{ font-size:14.5px; color:var(--ink); }
+
+  /* ---------- LOT LOOKUP ---------- */
+  .filter-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; align-items:center;}
+  .chip{
+    font-size:13px; padding:7px 14px; border:1px solid var(--line); background:#fff; border-radius:999px;
+    cursor:pointer; color:var(--ink-soft); font-weight:500;
+  }
+  .chip.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+  .search-input{
+    flex:1 1 200px; padding:8px 12px; border:1px solid var(--line); border-radius:var(--radius);
+    font-family:var(--sans); font-size:13.5px; background:#fff; min-width:160px;
+  }
+  .search-input:focus, .chip:focus-visible, .tab-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--navy-3); outline-offset:1px;
+  }
+
+  table{ width:100%; border-collapse:collapse; background:#fff; font-size:13.5px; }
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#fff;
+    background:var(--navy); padding:9px 12px; position:sticky; top:0;
+  }
+  tbody td{ padding:9px 12px; border-bottom:1px solid var(--line); }
+  tbody tr{ cursor:pointer; }
+  tbody tr:hover{ background:var(--paper-2); }
+  tbody tr.selected{ background:#EFE4C6; }
+  .khu-tag{
+    font-family:var(--mono); font-size:11px; padding:2px 7px; border-radius:2px;
+    background:var(--navy); color:#fff; letter-spacing:.03em;
+  }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); }
+  .num-cell{ font-family:var(--mono); font-size:13px; }
+
+  .detail-box{
+    margin-top:16px; border:1px solid var(--gold); background:#FBF6E9; border-radius:var(--radius); padding:18px 20px;
+  }
+  .detail-box h3{ font-family:var(--serif); font-size:17px; margin:0 0 10px; color:var(--navy); }
+  .detail-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px 18px; margin-bottom:16px; }
+  .detail-grid .k{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; }
+  .detail-grid .v{ font-size:15px; font-weight:600; color:var(--ink); font-family:var(--mono); }
+
+  .gen-form{ display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:12px;}
+  .gen-form label{ font-size:12px; color:var(--ink-soft); display:block; margin-bottom:4px; }
+  .gen-form input{ width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-family:var(--sans); font-size:13.5px; }
+  .gen-form .full{ grid-column:1 / -1; }
+  .btn{
+    font-family:var(--sans); font-weight:600; font-size:13.5px; padding:9px 18px; border-radius:var(--radius);
+    border:1px solid var(--navy); background:var(--navy); color:#fff; cursor:pointer;
+  }
+  .btn.secondary{ background:#fff; color:var(--navy); }
+  .btn:hover{ opacity:.92; }
+  .output-box{
+    margin-top:12px; background:var(--navy-2); color:#EFE9D6; font-family:var(--mono); font-size:13px;
+    padding:12px 14px; border-radius:var(--radius); display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .output-box span{ word-break:break-word; }
+  .copy-btn{ flex-shrink:0; background:var(--gold); border:none; color:var(--navy-2); font-weight:700; padding:6px 12px; border-radius:2px; cursor:pointer; font-size:12px;}
+  .hint{ font-size:12px; color:var(--ink-soft); margin-top:6px; }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline{ list-style:none; margin:0; padding:0; border-left:2px solid var(--line); margin-left:8px; }
+  .tl-item{ position:relative; padding:0 0 26px 26px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-dot{ position:absolute; left:-7px; top:2px; width:12px; height:12px; border-radius:50%; background:#fff; border:2px solid var(--line); }
+  .tl-item.now .tl-dot{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 4px rgba(176,127,42,.18);}
+  .tl-item.past .tl-dot{ background:var(--line); border-color:var(--line); }
+  .tl-status{ font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:2px; display:inline-block; margin-bottom:6px; }
+  .tl-item.now .tl-status{ background:var(--gold-soft); color:#5B3E0B; }
+  .tl-item.upcoming .tl-status{ background:var(--paper-2); color:var(--ink-soft); border:1px solid var(--line); }
+  .tl-item.past .tl-status{ background:none; color:#9A947F; border:1px solid var(--line); }
+  .tl-item h4{ margin:0 0 4px; font-family:var(--serif); font-size:16.5px; color:var(--ink); }
+  .tl-item .range{ font-family:var(--mono); font-size:12px; color:var(--navy); margin-bottom:4px; }
+  .tl-item p{ margin:0; font-size:13.5px; color:var(--ink-soft); max-width:60ch; }
+
+  /* ---------- CHECKLIST ---------- */
+  .checklist{ list-style:none; margin:0; padding:0; }
+  .checklist li{ display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line); }
+  .checklist li:last-child{ border-bottom:none; }
+  .checklist input[type=checkbox]{ width:18px; height:18px; margin-top:1px; accent-color:var(--navy); flex-shrink:0; }
+  .checklist label{ font-size:14px; }
+  .checklist li.done label{ color:#9A947F; text-decoration:line-through; }
+  .progress-track{ height:6px; background:var(--paper-2); border-radius:3px; overflow:hidden; margin-bottom:14px;}
+  .progress-fill{ height:100%; background:var(--gold); width:0%; transition:width .3s ease; }
+  .progress-label{ font-size:12px; color:var(--ink-soft); margin-bottom:8px; font-family:var(--mono); }
+
+  /* ---------- CONDITIONS / RISK ---------- */
+  details.risk{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); margin-bottom:10px; }
+  details.risk summary{
+    list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; gap:10px; font-weight:600; font-size:14.5px; color:var(--ink);
+  }
+  details.risk summary::-webkit-details-marker{ display:none; }
+  details.risk summary::before{ content:"+"; font-family:var(--mono); color:var(--navy); font-size:16px; width:16px; }
+  details.risk[open] summary::before{ content:"–"; }
+  details.risk .risk-body{ padding:0 16px 15px 42px; font-size:14px; color:var(--ink-soft); }
+  .sev{ font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:2px; margin-left:auto; flex-shrink:0;}
+  .sev.high{ background:#F3E0DA; color:var(--brick); }
+  .sev.med{ background:#F1E7CC; color:#7A5A12; }
+
+  .conditions-list{ margin:0; padding-left:18px; }
+  .conditions-list li{ margin-bottom:9px; font-size:14.5px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-card{ background:var(--navy); color:#F3EFE3; padding:26px 24px; border-radius:var(--radius); }
+  .contact-card h3{ font-family:var(--serif); margin:0 0 4px; font-size:19px; }
+  .contact-card .role{ font-size:12.5px; color:var(--gold-soft); margin-bottom:16px; }
+  .contact-line{ display:flex; gap:10px; font-size:14px; padding:6px 0; border-top:1px solid rgba(255,255,255,.12); }
+  .contact-line .k{ width:110px; flex-shrink:0; color:#B9AE8F; font-size:12.5px; text-transform:uppercase; letter-spacing:.03em; padding-top:2px;}
+  .contact-line a{ color:#F3EFE3; text-decoration:underline; text-decoration-color:rgba(255,255,255,.35); }
+  .foot-note{ font-size:12px; color:var(--ink-soft); text-align:center; margin-top:36px; line-height:1.6; }
+
+  @media (max-width:640px){
+    .gen-form{ grid-template-columns:1fr; }
+    .hero{ padding:32px 16px 26px; }
+    main{ padding:26px 14px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker"><span class="dot"></span>THÔNG BÁO SỐ 1181/TBNY-CTMT · QUY CHẾ SỐ 480/QCĐG-CTMT</div>
+    <h1 class="title">Đấu giá quyền sử dụng đất<br>Khu đô thị Bắc Sông Hiếu GĐ2</h1>
+    <p class="subtitle">Phường Đông Hà, tỉnh Quảng Trị — 30 thửa đất ở thuộc các khu DO21, DO35, DO36. Công ty Đấu giá Hợp danh Miền Trung tổ chức, phương thức trả giá lên, bỏ phiếu gián tiếp.</p>
+
+    <div class="stats-row">
+      <div class="stat"><div class="num">30</div><div class="lbl">thửa đất đấu giá</div></div>
+      <div class="stat"><div class="num">5.639 m²</div><div class="lbl">tổng diện tích</div></div>
+      <div class="stat"><div class="num">34,13 tỷ đ</div><div class="lbl">tổng giá khởi điểm</div></div>
+      <div class="stat"><div class="num">20/9/2026</div><div class="lbl">ngày công bố giá</div></div>
+    </div>
+
+    <div class="countdown-wrap">
+      <div class="countdown-label">Thời gian còn lại đến phiên đấu giá (08:00 giờ VN · 20/9/2026):</div>
+      <div class="countdown-nums" id="countdown">
+        <div><div class="n" id="cd-d">–</div><div class="u">ngày</div></div>
+        <div><div class="n" id="cd-h">–</div><div class="u">giờ</div></div>
+        <div><div class="n" id="cd-m">–</div><div class="u">phút</div></div>
+        <div><div class="n" id="cd-s">–</div><div class="u">giây</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs-bar">
+  <div class="tabs-bar-inner">
+    <button class="tab-btn active" data-tab="tong-quan">Tổng quan</button>
+    <button class="tab-btn" data-tab="tra-cuu">Tra cứu lô đất</button>
+    <button class="tab-btn" data-tab="moc-thoi-gian">Mốc thời gian</button>
+    <button class="tab-btn" data-tab="ho-so">Hồ sơ &amp; điều kiện</button>
+    <button class="tab-btn" data-tab="rui-ro">Rủi ro cần biết</button>
+    <button class="tab-btn" data-tab="lien-he">Liên hệ</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ===== TỔNG QUAN ===== -->
+  <section class="panel active" id="tong-quan">
+    <div class="section-head"><h2>Tổng quan tài sản đấu giá</h2></div>
+    <p class="lede">Tài sản đấu giá là <b>quyền sử dụng đất ở</b> của 30 thửa đất, tổng diện tích 5.639 m², thuộc Dự án Khu đô thị Bắc Sông Hiếu giai đoạn 2, phường Đông Hà, tỉnh Quảng Trị. Đấu giá tổ chức theo <b>từng thửa riêng lẻ</b>, hình thức bỏ phiếu gián tiếp, phương thức trả giá lên.</p>
+    <div class="info-grid">
+      <div class="card"><div class="k">Hiện trạng đất</div><div class="v">Đã hoàn thiện hạ tầng kỹ thuật theo dự án được duyệt; không có tài sản gắn liền với đất</div></div>
+      <div class="card"><div class="k">Hình thức giao đất</div><div class="v">Nhà nước giao đất có thu tiền sử dụng đất thông qua đấu giá quyền sử dụng đất</div></div>
+      <div class="card"><div class="k">Mục đích sử dụng</div><div class="v">Đất ở đô thị · Thời hạn sử dụng: lâu dài</div></div>
+      <div class="card"><div class="k">Người có tài sản</div><div class="v">Chi nhánh Trung tâm Phát triển quỹ đất khu vực phía Nam, tỉnh Quảng Trị</div></div>
+      <div class="card"><div class="k">Xem tài sản</div><div class="v">07/9 – 10/9/2026, tại khu đất có tài sản đấu giá</div></div>
+      <div class="card"><div class="k">Ghi chú giá</div><div class="v">Giá khởi điểm chưa gồm lệ phí trước bạ, thuế, phí, lệ phí cấp Giấy chứng nhận QSDĐ</div></div>
+    </div>
+  </section>
+
+  <!-- ===== TRA CỨU LÔ ĐẤT ===== -->
+  <section class="panel" id="tra-cuu">
+    <div class="section-head"><h2>Tra cứu giá từng lô đất</h2><span class="count" id="lot-count"></span></div>
+    <div class="filter-row">
+      <button class="chip active" data-filter="Tất cả">Tất cả</button>
+      <button class="chip" data-filter="DO21">DO21</button>
+      <button class="chip" data-filter="DO35">DO35</button>
+      <button class="chip" data-filter="DO36">DO36</button>
+      <input class="search-input" id="lot-search" placeholder="Tìm theo tên lô, ví dụ: Lô 5…">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Khu</th><th>Lô số</th><th>Diện tích (m²)</th>
+            <th data-sort="gia" style="cursor:pointer">Giá khởi điểm (đ) ↕</th>
+            <th>Tiền đặt trước (đ)</th><th>Tiền hồ sơ (đ)</th>
+          </tr>
+        </thead>
+        <tbody id="lot-tbody"></tbody>
+      </table>
+    </div>
+    <p class="hint">Nhấp vào một dòng để xem chi tiết bước giá và tạo nội dung chuyển khoản tiền đặt trước.</p>
+
+    <div class="detail-box" id="detail-box" style="display:none;">
+      <h3 id="detail-title"></h3>
+      <div class="detail-grid">
+        <div><div class="k">Diện tích</div><div class="v" id="d-dt"></div></div>
+        <div><div class="k">Giá khởi điểm</div><div class="v" id="d-gia"></div></div>
+        <div><div class="k">Tiền đặt trước</div><div class="v" id="d-dat"></div></div>
+        <div><div class="k">Tiền mua hồ sơ</div><div class="v" id="d-hoso"></div></div>
+        <div><div class="k">Bước giá áp dụng</div><div class="v" id="d-buoc"></div></div>
+      </div>
+
+      <h3 style="margin-top:4px;">Tạo nội dung chuyển khoản tiền đặt trước</h3>
+      <p class="hint" style="margin-top:-4px; margin-bottom:10px;">Điền thông tin để tạo đúng cú pháp nội dung nộp tiền theo yêu cầu của Công ty Đấu giá (STK 20105777 – Vietinbank CN Quảng Trị).</p>
+      <div class="gen-form">
+        <div><label>Họ và tên</label><input id="g-name" placeholder="Nguyễn Văn A"></div>
+        <div><label>Số CCCD</label><input id="g-cccd" placeholder="0451xxxxxxxx"></div>
+        <div><label>Số thửa đất (theo phụ lục hồ sơ)</label><input id="g-thua" placeholder="VD: 1032"></div>
+        <div><label>Lô số / Khu đất</label><input id="g-lokhu" disabled></div>
+      </div>
+      <button class="btn" id="gen-btn">Tạo nội dung chuyển khoản</button>
+      <div class="output-box" id="output-box" style="display:none;">
+        <span id="output-text"></span>
+        <button class="copy-btn" id="copy-btn">Sao chép</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MỐC THỜI GIAN ===== -->
+  <section class="panel" id="moc-thoi-gian">
+    <div class="section-head"><h2>Các mốc thời gian quan trọng</h2></div>
+    <ul class="timeline" id="timeline"></ul>
+  </section>
+
+  <!-- ===== HỒ SƠ & ĐIỀU KIỆN ===== -->
+  <section class="panel" id="ho-so">
+    <div class="section-head"><h2>Hồ sơ cần chuẩn bị</h2></div>
+    <div class="card">
+      <div class="progress-label" id="progress-label">0/6 mục đã chuẩn bị</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+
+    <div class="section-head" style="margin-top:28px;"><h2>Điều kiện đăng ký tham gia đấu giá</h2></div>
+    <div class="card">
+      <ol class="conditions-list">
+        <li>Là cá nhân thuộc đối tượng được Nhà nước giao đất ở có thu tiền sử dụng đất theo Luật Đất đai 2024, có năng lực hành vi dân sự đầy đủ.</li>
+        <li>Không thuộc trường hợp bị cấm theo khoản 4 Điều 38 Luật Đấu giá tài sản (người mất/hạn chế năng lực hành vi dân sự; người làm việc tại tổ chức đấu giá; người thân của đấu giá viên điều hành hoặc người thẩm định giá…).</li>
+        <li>Không trong thời gian bị cấm tham gia đấu giá đất ở trên phạm vi toàn quốc theo Điều 3 Nghị quyết số 66.11/2026/NQ-CP ngày 06/01/2026.</li>
+        <li>Mỗi hộ gia đình chỉ được cử 01 cá nhân đại diện tham gia; việc ủy quyền phải bằng văn bản hợp pháp theo Bộ luật Dân sự.</li>
+        <li>Người đăng ký tự chịu trách nhiệm rà soát và chịu trách nhiệm trước pháp luật về các điều kiện nêu trên khi nộp hồ sơ.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== RỦI RO ===== -->
+  <section class="panel" id="rui-ro">
+    <div class="section-head"><h2>Rủi ro và lưu ý cần biết</h2></div>
+    <div id="risk-list"></div>
+  </section>
+
+  <!-- ===== LIÊN HỆ ===== -->
+  <section class="panel" id="lien-he">
+    <div class="section-head"><h2>Thông tin liên hệ</h2></div>
+    <div class="contact-card">
+      <h3>Công ty Đấu giá Hợp danh Miền Trung</h3>
+      <div class="role">Tổ chức hành nghề đấu giá tài sản</div>
+      <div class="contact-line"><div class="k">Địa chỉ</div><div>Đường Trần Nhật Duật, TDP Tây Trì, phường Đông Hà, tỉnh Quảng Trị</div></div>
+      <div class="contact-line"><div class="k">Điện thoại</div><div><a href="tel:02333565379">0233.3565379</a></div></div>
+      <div class="contact-line"><div class="k">Email</div><div><a href="mailto:daugiamientrung@gmail.com">daugiamientrung@gmail.com</a></div></div>
+      <div class="contact-line"><div class="k">Người có tài sản</div><div>Chi nhánh Trung tâm Phát triển quỹ đất khu vực phía Nam — Số 250 đường Hùng Vương, phường Nam Đông Hà, tỉnh Quảng Trị</div></div>
+      <div class="contact-line"><div class="k">Tài khoản nhận<br>tiền đặt trước</div><div>STK 20105777 — Vietinbank CN Quảng Trị</div></div>
+    </div>
+    <p class="foot-note">Ứng dụng này tổng hợp từ Thông báo đấu giá số 1181/TBNY-CTMT và Quy chế cuộc đấu giá số 480/QCĐG-CTMT ngày 03/9/2026 của Công ty Đấu giá Hợp danh Miền Trung, chỉ nhằm mục đích tra cứu nhanh. Vui lòng đối chiếu văn bản gốc và Quy chế đầy đủ trước khi quyết định tham gia đấu giá.</p>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  /* ---------- DATA ---------- */
+  const LOTS = [];
+  LOTS.push({khu:'DO21', lo:'Lô 1', dt:191.5, gia:1378800000, dat:150000000, hoso:200000});
+  for(let i=2;i<=16;i++) LOTS.push({khu:'DO21', lo:'Lô '+i, dt:192.0, gia:1152000000, dat:150000000, hoso:200000});
+  LOTS.push({khu:'DO35', lo:'Lô 1', dt:137.5, gia:990000000, dat:100000000, hoso:100000});
+  [8,9,10,11,12,13,14].forEach(n=> LOTS.push({khu:'DO35', lo:'Lô '+n, dt:120.0, gia:720000000, dat:100000000, hoso:100000}));
+  LOTS.push({khu:'DO36', lo:'Lô 1', dt:211.5, gia:1488000000, dat:250000000, hoso:200000});
+  for(let i=2;i<=6;i++) LOTS.push({khu:'DO36', lo:'Lô '+i, dt:275.7, gia:1589940000, dat:250000000, hoso:200000});
+
+  const fmt = n => n.toLocaleString('vi-VN') + ' đ';
+  const fmtArea = n => n.toLocaleString('vi-VN') + ' m²';
+
+  /* ---------- TABS ---------- */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ---------- COUNTDOWN ---------- */
+  const target = new Date('2026-09-20T08:00:00+07:00');
+  function tickCountdown(){
+    const now = new Date();
+    let diff = target - now;
+    const wrap = document.querySelector('.countdown-label');
+    if(diff <= 0){
+      document.getElementById('countdown').style.display='none';
+      wrap.textContent = 'Phiên đấu giá đã bắt đầu / kết thúc (08:00 giờ VN · 20/9/2026).';
+      return;
+    }
+    const d = Math.floor(diff/86400000); diff -= d*86400000;
+    const h = Math.floor(diff/3600000); diff -= h*3600000;
+    const m = Math.floor(diff/60000); diff -= m*60000;
+    const s = Math.floor(diff/1000);
+    document.getElementById('cd-d').textContent = d;
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  /* ---------- LOT TABLE ---------- */
+  let currentFilter = 'Tất cả';
+  let currentSearch = '';
+  let sortDir = null;
+  let selectedLot = null;
+
+  function renderLots(){
+    let rows = LOTS.filter(l => (currentFilter==='Tất cả' || l.khu===currentFilter) &&
+      l.lo.toLowerCase().includes(currentSearch.toLowerCase()));
+    if(sortDir) rows = rows.slice().sort((a,b)=> sortDir==='asc' ? a.gia-b.gia : b.gia-a.gia);
+    const tbody = document.getElementById('lot-tbody');
+    tbody.innerHTML = rows.map((l,i)=>`
+      <tr data-idx="${LOTS.indexOf(l)}">
+        <td><span class="khu-tag">${l.khu}</span></td>
+        <td>${l.lo}</td>
+        <td class="num-cell">${fmtArea(l.dt)}</td>
+        <td class="num-cell">${fmt(l.gia)}</td>
+        <td class="num-cell">${fmt(l.dat)}</td>
+        <td class="num-cell">${fmt(l.hoso)}</td>
+      </tr>`).join('');
+    document.getElementById('lot-count').textContent = rows.length + ' / 30 lô';
+    tbody.querySelectorAll('tr').forEach(tr=>{
+      tr.addEventListener('click', ()=> selectLot(parseInt(tr.dataset.idx)));
+    });
+  }
+
+  function selectLot(idx){
+    selectedLot = LOTS[idx];
+    document.querySelectorAll('#lot-tbody tr').forEach(tr=> tr.classList.toggle('selected', parseInt(tr.dataset.idx)===idx));
+    const box = document.getElementById('detail-box');
+    box.style.display = 'block';
+    document.getElementById('detail-title').textContent = `${selectedLot.khu} — ${selectedLot.lo}`;
+    document.getElementById('d-dt').textContent = fmtArea(selectedLot.dt);
+    document.getElementById('d-gia').textContent = fmt(selectedLot.gia);
+    document.getElementById('d-dat').textContent = fmt(selectedLot.dat);
+    document.getElementById('d-hoso').textContent = fmt(selectedLot.hoso);
+    document.getElementById('d-buoc').textContent = selectedLot.gia >= 1000000000 ? '15.000.000 đ / vòng đấu' : '10.000.000 đ / vòng đấu';
+    document.getElementById('g-lokhu').value = `${selectedLot.lo} — khu ${selectedLot.khu}`;
+    document.getElementById('output-box').style.display = 'none';
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.filter;
+      renderLots();
+    });
+  });
+  document.getElementById('lot-search').addEventListener('input', e=>{
+    currentSearch = e.target.value;
+    renderLots();
+  });
+  document.querySelector('[data-sort="gia"]').addEventListener('click', ()=>{
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    renderLots();
+  });
+
+  document.getElementById('gen-btn').addEventListener('click', ()=>{
+    if(!selectedLot) return;
+    const name = document.getElementById('g-name').value.trim() || '(Họ tên)';
+    const cccd = document.getElementById('g-cccd').value.trim() || '(Số CCCD)';
+    const thua = document.getElementById('g-thua').value.trim() || '(Số thửa đất)';
+    const text = `${name}, ${cccd} nộp TĐT-ĐG số thửa đất ${thua} (${selectedLot.lo}) khu ${selectedLot.khu} ngày 20/9/2026`;
+    document.getElementById('output-text').textContent = text;
+    document.getElementById('output-box').style.display = 'flex';
+  });
+  document.getElementById('copy-btn').addEventListener('click', ()=>{
+    const text = document.getElementById('output-text').textContent;
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.getElementById('copy-btn');
+      const old = btn.textContent;
+      btn.textContent = 'Đã sao chép ✓';
+      setTimeout(()=> btn.textContent = old, 1500);
+    });
+  });
+
+  renderLots();
+
+  /* ---------- TIMELINE ---------- */
+  const STEPS = [
+    {label:'Xem tài sản đấu giá', start:'2026-09-07T07:30:00+07:00', end:'2026-09-10T17:30:00+07:00',
+     desc:'Trực tiếp tại địa chỉ có tài sản đấu giá (khu đất thuộc Dự án). Không xem tài sản thì tự chịu trách nhiệm về quyết định của mình.'},
+    {label:'Bán hồ sơ, nhận hồ sơ đăng ký & nộp tiền đặt trước', start:'2026-09-04T07:30:00+07:00', end:'2026-09-16T17:30:00+07:00',
+     desc:'Tại trụ sở Công ty Đấu giá Hợp danh Miền Trung; từ 15/9/2026 có thêm điểm nhận tại Vietinbank CN Quảng Trị (236 Hùng Vương).'},
+    {label:'Nộp phiếu trả giá', start:'2026-09-04T07:30:00+07:00', end:'2026-09-16T17:30:00+07:00',
+     desc:'Nộp trực tiếp cho tổ chức đấu giá hoặc gửi qua dịch vụ bưu chính, đảm bảo đến trước thời điểm hết hạn.'},
+    {label:'Tổ chức phiên đấu giá (công bố giá)', start:'2026-09-20T07:45:00+07:00', end:'2026-09-20T08:00:00+07:00',
+     desc:'Điểm danh lúc 07 giờ 45; bắt đầu công bố giá lúc 08 giờ 00 tại Hội trường Vietinbank – Chi nhánh Quảng Trị.'},
+  ];
+  function statusOf(step){
+    const now = new Date();
+    const s = new Date(step.start), e = new Date(step.end);
+    if(now < s) return 'upcoming';
+    if(now >= s && now <= e) return 'now';
+    return 'past';
+  }
+  const TZ = 'Asia/Ho_Chi_Minh';
+  function fmtRange(a,b){
+    const da = new Date(a), db = new Date(b);
+    const dayKey = d => d.toLocaleDateString('en-CA', {timeZone:TZ});
+    const sameDay = dayKey(da)===dayKey(db);
+    const f = d => d.toLocaleString('vi-VN', {timeZone:TZ, day:'2-digit',month:'2-digit',year:'numeric'});
+    const ft = d => d.toLocaleString('vi-VN', {timeZone:TZ, hour:'2-digit',minute:'2-digit'});
+    if(sameDay) return `${ft(da)} – ${ft(db)} (giờ VN), ${f(da)}`;
+    return `${f(da)} → ${f(db)} (giờ VN)`;
+  }
+  const statusLabel = {now:'Đang diễn ra', upcoming:'Sắp diễn ra', past:'Đã kết thúc'};
+  document.getElementById('timeline').innerHTML = STEPS.map(step=>{
+    const st = statusOf(step);
+    return `<li class="tl-item ${st}">
+      <div class="tl-dot"></div>
+      <div class="tl-status">${statusLabel[st]}</div>
+      <h4>${step.label}</h4>
+      <div class="range">${fmtRange(step.start, step.end)}</div>
+      <p>${step.desc}</p>
+    </li>`;
+  }).join('');
+
+  /* ---------- CHECKLIST ---------- */
+  const DOCS = [
+    'Phiếu đăng ký tham gia đấu giá (theo mẫu do Công ty Đấu giá phát hành)',
+    'Đơn đăng ký địa chỉ Email/Zalo để nhận thông báo',
+    'Bản sao Căn cước công dân còn thời hạn (mang bản chính để đối chiếu)',
+    'Chứng từ nộp tiền đặt trước',
+    'Chứng từ nộp tiền mua hồ sơ (hóa đơn GTGT)',
+    'Phiếu trả giá — bỏ riêng từng thửa vào phong bì dán kín, ký tại mép phong bì',
+  ];
+  const checklistEl = document.getElementById('checklist');
+  checklistEl.innerHTML = DOCS.map((d,i)=>`
+    <li id="doc-${i}">
+      <input type="checkbox" id="chk-${i}">
+      <label for="chk-${i}">${d}</label>
+    </li>`).join('');
+  function updateProgress(){
+    const total = DOCS.length;
+    const done = DOCS.filter((_,i)=> document.getElementById('chk-'+i).checked).length;
+    document.getElementById('progress-label').textContent = `${done}/${total} mục đã chuẩn bị`;
+    document.getElementById('progress-fill').style.width = (done/total*100) + '%';
+  }
+  DOCS.forEach((_,i)=>{
+    document.getElementById('chk-'+i).addEventListener('change', (e)=>{
+      document.getElementById('doc-'+i).classList.toggle('done', e.target.checked);
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  /* ---------- RISKS ---------- */
+  const RISKS = [
+    {sev:'high', t:'Vắng mặt điểm danh hoặc khi công bố giá → mất tiền đặt trước',
+     b:'Người tham gia đấu giá phải có mặt lúc 07h45 ngày 20/9/2026 để điểm danh. Nếu không có mặt đúng giờ hoặc vắng mặt tại thời điểm bắt đầu công bố giá (08h00), sẽ bị coi là vắng mặt và mất tiền đặt trước theo điểm a khoản 6 Điều 39 Luật Đấu giá tài sản.'},
+    {sev:'high', t:'Nộp tiền đặt trước trễ hạn hoặc sai nội dung → không hợp lệ',
+     b:'Tiền đặt trước chỉ được công nhận hợp lệ khi ngân hàng ghi có vào tài khoản Công ty đấu giá trước 17 giờ 30 ngày 16/9/2026. Mọi trở ngại khách quan, sự cố kỹ thuật hoặc lỗi hệ thống ngân hàng đều KHÔNG được xem xét. Không được nộp tiền đặt trước hộ giữa các cá nhân cùng đăng ký một thửa.'},
+    {sev:'med', t:'Phiếu trả giá không hợp lệ sẽ không được xét kết quả',
+     b:'Phiếu trả giá bị loại nếu: không đúng mẫu quy định; không bỏ riêng từng thửa vào phong bì dán kín có chữ ký tại mép; giá trả thấp hơn giá khởi điểm hoặc giá bằng số/chữ không khớp; có tẩy xóa, sửa chữa; nộp sai thời hạn, sai địa điểm, sai thùng phiếu.'},
+    {sev:'high', t:'Trúng đấu giá mà không nộp đủ tiền → mất cọc và có thể bị cấm đấu giá toàn quốc',
+     b:'Người trúng đấu giá phải nộp 50% tiền trúng đấu giá trong 30 ngày và 50% còn lại trong 60 ngày kể từ ngày có Thông báo nộp tiền của cơ quan thuế. Nếu không nộp hoặc nộp không đủ, kết quả trúng đấu giá bị hủy, mất tiền đặt cọc, và có thể bị cấm tham gia đấu giá đất ở toàn quốc từ 6 tháng đến 5 năm theo Điều 3 Nghị quyết số 66.11/2026/NQ-CP.'},
+    {sev:'med', t:'Các trường hợp khác không được nhận lại tiền đặt trước',
+     b:'Bị truất quyền tham gia do vi phạm khoản 5 Điều 9 Luật Đấu giá tài sản (thông đồng, móc nối làm sai lệch kết quả; cản trở, gây rối; đe dọa, cưỡng ép; cung cấp thông tin/giấy tờ giả); từ chối ký biên bản đấu giá; rút lại giá đã trả hoặc đã chấp nhận; từ chối kết quả trúng đấu giá.'},
+    {sev:'med', t:'Tự chịu trách nhiệm nếu không trực tiếp xem tài sản',
+     b:'Cá nhân đăng ký tham gia đấu giá nếu không trực tiếp xem tài sản, không khảo sát thực địa thì tự chịu trách nhiệm về quyết định tham gia đấu giá của mình.'},
+  ];
+  document.getElementById('risk-list').innerHTML = RISKS.map(r=>`
+    <details class="risk">
+      <summary>${r.t}<span class="sev ${r.sev}">${r.sev==='high'?'Quan trọng':'Lưu ý'}</span></summary>
+      <div class="risk-body">${r.b}</div>
+    </details>`).join('');
+
+})();
+</script>
+</body>
+</html>

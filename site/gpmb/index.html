@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra cứu Quy trình GPMB — Quảng Trị</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --navy: #1F3864;
+    --navy-dark: #14264A;
+    --navy-mid: #2E4A7D;
+    --lightblue: #E4ECF7;
+    --lightblue-2: #EEF3FA;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --ink: #1B2430;
+    --muted: #5B6472;
+    --border: #E1E6EE;
+    --red: #A82B22;
+    --red-bg: #FBEBEA;
+    --gold: #B8862E;
+    --radius: 10px;
+    --sidebar-w: 300px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Be Vietnam Pro', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: 'Be Vietnam Pro', sans-serif; margin: 0; }
+
+  /* ---------- Layout shell ---------- */
+  .shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: #EAF0FB;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 32px;
+  }
+  .brand {
+    padding: 4px 8px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+    margin-bottom: 14px;
+  }
+  .brand .kicker {
+    font-size: 11px;
+    letter-spacing: .06em;
+    color: #9FB3D6;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .brand h1 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .brand .sub {
+    font-size: 12.5px;
+    color: #B7C6E3;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .navgroup { margin-top: 18px; }
+  .navgroup-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #8CA1C8;
+    font-weight: 700;
+    padding: 0 10px;
+    margin-bottom: 6px;
+  }
+  .navitem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: #D7E1F4;
+    font-family: inherit;
+    font-size: 13.5px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background .12s ease, color .12s ease;
+  }
+  .navitem .num {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.10);
+    color: #C4D3EC;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .navitem:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .navitem.active { background: #EAF0FB; color: var(--navy-dark); font-weight: 600; }
+  .navitem.active .num { background: var(--gold); color: #fff; }
+
+  .sidebar-foot {
+    margin-top: 22px;
+    padding: 12px 10px 0;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    font-size: 11.5px;
+    color: #8CA1C8;
+    line-height: 1.5;
+  }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(250,250,248,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+  }
+  .searchwrap { position: relative; max-width: 640px; }
+  .searchwrap input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14.5px;
+    padding: 11px 14px 11px 40px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .12s ease, box-shadow .12s ease;
+  }
+  .searchwrap input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(46,74,125,0.14); }
+  .searchwrap svg {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: var(--muted); pointer-events: none;
+  }
+  .searchmeta { font-size: 12.5px; color: var(--muted); margin-top: 7px; }
+
+  .content { padding: 26px 32px 64px; max-width: 980px; }
+
+  .phase-header { margin-bottom: 18px; }
+  .phase-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -.01em;
+  }
+  .phase-header .count { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .note-box {
+    display: flex;
+    gap: 10px;
+    background: var(--red-bg);
+    border: 1px solid #EFC9C4;
+    border-left: 4px solid var(--red);
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin-bottom: 22px;
+    font-size: 13.5px;
+    color: #7A211A;
+    line-height: 1.55;
+  }
+  .note-box .icon { flex-shrink: 0; font-weight: 800; font-size: 14px; }
+  .note-box b { font-weight: 700; }
+
+  .info-box {
+    display: flex;
+    gap: 10px;
+    background: var(--lightblue-2);
+    border: 1px solid #C9D9EE;
+    border-left: 4px solid var(--navy-mid);
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin-bottom: 22px;
+    font-size: 13.5px;
+    color: #223A5E;
+    line-height: 1.55;
+  }
+
+  /* ---------- Step cards ---------- */
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 2px rgba(20,38,74,0.03);
+  }
+  .step-head {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: var(--lightblue);
+    color: var(--navy);
+    font-size: 12.5px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-viec { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 22px;
+    padding-left: 38px;
+  }
+  .field { min-width: 0; }
+  .field-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .field-val { font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+  .field.canvu { grid-column: 1 / -1; border-top: 1px dashed var(--border); padding-top: 9px; margin-top: 2px; }
+  .field.canvu .field-val { color: var(--navy-mid); font-style: italic; font-size: 13px; }
+
+  @media (max-width: 700px) {
+    .step-grid { grid-template-columns: 1fr; padding-left: 0; margin-top: 4px; }
+    .step-head { margin-bottom: 8px; }
+  }
+
+  mark { background: #FCE9A8; color: inherit; border-radius: 2px; padding: 0 1px; }
+
+  /* ---------- Bullet appendix list ---------- */
+  .bullets { list-style: none; margin: 0; padding: 0; }
+  .bullets li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 16px;
+    margin-bottom: 10px;
+    font-size: 13.7px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 34px;
+  }
+  .bullets li::before {
+    content: "";
+    position: absolute;
+    left: 15px; top: 18px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--navy-mid);
+  }
+  .appendix-intro { font-size: 13.7px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+  .appendix-footer {
+    font-size: 12.5px; color: var(--muted); font-style: italic;
+    margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--border);
+  }
+
+  /* ---------- Sources list ---------- */
+  .source-card {
+    display: flex; gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    align-items: baseline;
+  }
+  .source-code {
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #fff;
+    background: var(--navy);
+    border-radius: 6px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .source-desc { font-size: 13.3px; color: var(--ink); line-height: 1.55; }
+
+  /* ---------- Results (search mode) ---------- */
+  .result-group { margin-bottom: 26px; }
+  .result-group-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    font-weight: 700; color: var(--navy-mid); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-group-title .line { flex: 1; height: 1px; background: var(--border); }
+  .empty-state {
+    text-align: center; padding: 60px 20px; color: var(--muted);
+  }
+  .empty-state .big { font-size: 15px; margin-bottom: 6px; color: var(--ink); font-weight: 600; }
+
+  /* ---------- Mobile ---------- */
+  .hamburger {
+    display: none;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .topbar-row { display: flex; align-items: center; gap: 12px; }
+
+  @media (max-width: 880px) {
+    .sidebar {
+      position: fixed; left: 0; top: 0; z-index: 30;
+      transform: translateX(-104%);
+      transition: transform .2s ease;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.25);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .content { padding: 20px 16px 48px; }
+    .topbar { padding: 12px 16px; }
+    .scrim {
+      display: none;
+      position: fixed; inset: 0; background: rgba(10,16,28,0.45); z-index: 25;
+    }
+    .scrim.show { display: block; }
+  }
+
+  @media print {
+    .sidebar, .topbar, .hamburger { display: none !important; }
+    .main { width: 100%; }
+    .content { max-width: 100%; padding: 0; }
+    .step, .bullets li, .source-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="scrim" id="scrim"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="kicker">TRA CỨU NỘI BỘ · CNTT PTQĐ</div>
+      <h1>Quy trình GPMB<br>tỉnh Quảng Trị</h1>
+      <div class="sub">Bồi thường, hỗ trợ, tái định cư &amp; giải phóng mặt bằng — cập nhật theo 15 văn bản pháp luật gốc, năm 2026</div>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup-label">Các giai đoạn</div>
+      <div id="nav-phases"></div>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup-label">Phụ lục</div>
+      <div id="nav-appendices"></div>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup-label">Tham khảo</div>
+      <button class="navitem" data-target="sources"><span class="num">§</span>Căn cứ pháp lý (15 văn bản)</button>
+    </div>
+
+    <div class="sidebar-foot">
+      Toàn bộ căn cứ Điều/Khoản đã đối chiếu trực tiếp với văn bản gốc. Dùng ô tìm kiếm phía trên để tra theo từ khóa, số quyết định hoặc điều khoản.
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-row">
+        <button class="hamburger" id="hamburger" aria-label="Mở menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="searchwrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search" type="text" placeholder="Tra cứu: nội dung công việc, thẩm quyền, số quyết định, điều khoản… (VD: “niêm yết”, “QĐ 30”, “Điều 15”)" autocomplete="off">
+        </div>
+      </div>
+      <div class="searchmeta" id="searchmeta"></div>
+    </div>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {"sources":[{"code":"Luật Đất đai 2024","desc":"Luật Đất đai số 31/2024/QH15 (được sửa đổi, bổ sung bởi Luật số 43/2024/QH15)"},{"code":"NQ 254/2025/QH15","desc":"Nghị quyết số 254/2025/QH15 ngày 11/12/2025 của Quốc hội — hiệu lực từ 01/01/2026 (riêng điểm b khoản 3 Điều 12 hiệu lực từ 11/12/2025)"},{"code":"QĐ 23/2026/QĐ-UBND","desc":"Ngày 11/02/2026 — đơn giá bồi thường nhà, nhà ở, công trình xây dựng; mức bồi thường di dời mồ mả; mức bồi thường chi phí di chuyển tài sản (hiệu lực từ ngày ký, thay thế QĐ 22/2025/QĐ-UBND)"},{"code":"QĐ 30/2026/QĐ-UBND","desc":"Ngày 12/3/2026 — quy định về bồi thường, hỗ trợ, tái định cư khi Nhà nước thu hồi đất (hiệu lực từ 22/3/2026, thay thế QĐ 14/2024/QĐ-UBND)"},{"code":"NQ 66.11/2026/NQ-CP","desc":"Ngày 06/01/2026 — tiền đặt trước đấu giá QSDĐ giao đất ở cho cá nhân; xử lý vi phạm nghĩa vụ nộp tiền trúng đấu giá (hiệu lực 06/01/2026 – 28/02/2027)"},{"code":"QĐ 04/2026/QĐ-UBND","desc":"Ngày 15/01/2026 — điều kiện, diện tích tối thiểu tách thửa, hợp thửa đất theo từng loại đất"},{"code":"QĐ 07/2026/QĐ-UBND","desc":"Ngày 15/01/2026 — hạn mức giao đất nông nghiệp, công nhận đất ở, giao đất chưa sử dụng, nhận chuyển quyền đất nông nghiệp và giao đất ở cho cá nhân"},{"code":"QĐ 08/2026/QĐ-UBND","desc":"Ngày 15/01/2026 — diện tích, vị trí công trình phục vụ trực tiếp sản xuất nông nghiệp trên đất trồng lúa và đất nông nghiệp khác"},{"code":"QĐ 09/2026/QĐ-UBND","desc":"Ngày 15/01/2026 — hạn mức giao đất cho tổ chức tôn giáo, tổ chức tôn giáo trực thuộc (không quá 5.000 m²)"},{"code":"QĐ 10/2026/QĐ-UBND","desc":"Ngày 15/01/2026 — các loại giấy tờ khác về QSDĐ có trước ngày 15/10/1993 làm căn cứ cấp Giấy chứng nhận"},{"code":"QĐ 50/2026/QĐ-UBND","desc":"Ngày 30/6/2026 — phân cấp thực hiện nhiệm vụ của UBND tỉnh về lĩnh vực đất đai (theo khoản 1 Điều 14 NĐ 49/2026/NĐ-CP) cho Chủ tịch UBND cấp xã, gồm 21 nhóm thẩm quyền cụ thể tại Điều 3 (hiệu lực TỪ NGÀY 30/6/2026, không hồi tố hồ sơ đang giải quyết trước đó)"},{"code":"QĐ 52/2026/QĐ-UBND","desc":"Ngày 30/6/2026 — hệ số điều chỉnh giá đất năm 2026 (K = Ktt × Kqh × Kytk), hiệu lực từ 10/7/2026 đến hết 31/12/2026 (chỉ áp dụng riêng năm 2026)"},{"code":"QĐ 21/2026/QĐ-UBND","desc":"Ngày 09/02/2026 — chỉ tiêu áp dụng trong phương pháp thặng dư và các yếu tố ảnh hưởng đến giá đất"},{"code":"NĐ 49/2026/NĐ-CP","desc":"Ngày 31/01/2026 — quy định chi tiết và hướng dẫn NQ 254/2025/QH15; sửa đổi bổ sung NĐ 71/2024, NĐ 88/2024, NĐ 101/2024, NĐ 102/2024/NĐ-CP; phân cấp cho UBND cấp tỉnh (Điều 14, thực hiện đến trước 01/3/2027); hiệu lực toàn Nghị định từ 31/01/2026"},{"code":"QĐ 59/2026/QĐ-UBND","desc":"Ngày 23/7/2026 — quy định trình tự, thủ tục hành chính về đất đai áp dụng trên địa bàn tỉnh (ban hành theo khoản 1 Điều 15 NĐ 49/2026/NĐ-CP); Phụ lục I quy định chi tiết từng bước, thời hạn theo NGÀY LÀM VIỆC cho thủ tục thu hồi đất, bồi thường, hỗ trợ, tái định cư; hiệu lực từ ngày ký (23/7/2026), thực hiện đến trước 01/3/2027"}],"relatedNotDifferent":"Quyết định số 06/2026/QĐ-UBND ngày 15/01/2026 quy định điều kiện, trình tự, thủ tục thẩm định để giao đất ở KHÔNG ĐẤU GIÁ quyền sử dụng đất cho cá nhân. Đây là một thủ tục giao đất độc lập, KHÔNG thuộc quy trình bồi thường GPMB, nên không tích hợp vào các bước dưới đây. Quy trình 'Hội đồng xét duyệt 05 ngày làm việc → niêm yết 10 ngày làm việc kèm mã QR → Biên bản kết thúc công khai có MTTQ' trong các bản checklist cũ thực chất thuộc QĐ 06/2026 (xét giao đất ở không đấu giá), KHÔNG áp dụng cho niêm yết phương án bồi thường (vốn có thời hạn riêng 10 ngày theo Điều 3 khoản 9 điểm b NQ 254/2025/QH15). Ngoài ra, QĐ 59/2026/QĐ-UBND Phụ lục I còn có Mục I, II, III quy định trình tự thu hồi đất do VI PHẠM PHÁP LUẬT ĐẤT ĐAI (Điều 81), do CHẤM DỨT SỬ DỤNG ĐẤT/TỰ NGUYỆN TRẢ ĐẤT (Điều 82) — đây là các trường hợp thu hồi đất KHÁC với thu hồi đất vì mục đích quốc phòng, an ninh, phát triển KT-XH (Mục IV, đối tượng của quy trình GPMB này), nên không đưa vào các bước dưới đây; cần tra cứu riêng nếu hồ sơ thuộc diện vi phạm/chấm dứt sử dụng đất.","authorityNotice":"QĐ 50/2026/QĐ-UBND chỉ có hiệu lực TỪ NGÀY 30/6/2026. Theo Điều 5 (điều khoản chuyển tiếp) của chính Quyết định: hồ sơ đang giải quyết TRƯỚC ngày 30/6/2026 vẫn theo thẩm quyền cũ, không tự động chuyển sang Chủ tịch UBND cấp xã; chỉ hồ sơ TIẾP NHẬN MỚI từ 30/6/2026 mới áp dụng thẩm quyền phân cấp tại Quyết định này. Toàn bộ cột 'Thẩm quyền' trong các bảng dưới đây phản ánh quy định áp dụng cho hồ sơ tiếp nhận từ 30/6/2026 trở đi. Về THỜI GIAN các bước: QĐ 59/2026/QĐ-UBND (hiệu lực từ 23/7/2026) quy định thời hạn cụ thể theo NGÀY LÀM VIỆC cho từng bước — hồ sơ nộp trước 23/7/2026 vẫn theo trình tự cũ đến khi có kết quả cuối cùng (Điều 5 QĐ 59/2026). Đối với các xã miền núi, biên giới, đặc khu Cồn Cỏ, xã khó khăn/đặc biệt khó khăn: MỌI mốc thời gian theo ngày làm việc trong quy trình dưới đây được CỘNG THÊM 07 NGÀY LÀM VIỆC (QĐ 59/2026, Điều 3 khoản 1).","phases":[{"id":"gd1","title":"Giai đoạn I — Chuẩn bị thu hồi đất","steps":[{"viec":"Xây dựng kế hoạch thu hồi đất trên cơ sở xem xét các căn cứ, điều kiện thu hồi đất","nguoi":"Tổ chức làm nhiệm vụ bồi thường, hỗ trợ, tái định cư chủ trì, phối hợp các cơ quan liên quan","thoigian":"Không quá 07 ngày làm việc kể từ ngày nhận được văn bản đề nghị của chủ đầu tư kèm hồ sơ dự án","thamquyen":"Tổ chức làm nhiệm vụ bồi thường thực hiện; căn cứ điều kiện thu hồi đất tại Điều 80 Luật Đất đai 2024","ketqua":"Kế hoạch thu hồi đất","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.1"},{"viec":"Tổ chức họp với người có đất trong khu vực thu hồi để phổ biến, tiếp nhận ý kiến về việc thu hồi đất, bồi thường, hỗ trợ, tái định cư của dự án","nguoi":"UBND cấp xã chủ trì, phối hợp Ủy ban MTTQ Việt Nam cùng cấp, Tổ chức làm nhiệm vụ bồi thường và các cơ quan liên quan","thoigian":"Không quá 05 ngày làm việc, trước khi ban hành Thông báo thu hồi đất","thamquyen":"UBND cấp xã chủ trì","ketqua":"Biên bản họp phổ biến, tiếp nhận ý kiến","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.2"},{"viec":"Ban hành Thông báo thu hồi đất","nguoi":"Chủ tịch UBND cấp xã","thoigian":"Không quá 03 ngày làm việc, sau khi nhận được văn bản đề nghị và hồ sơ liên quan do chủ đầu tư/Tổ chức làm nhiệm vụ bồi thường gửi đến","thamquyen":"Chủ tịch UBND cấp xã (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Thông báo thu hồi đất","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.3a; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 2 (căn cứ điểm a khoản 2 Điều 87 Luật Đất đai 2024)"},{"viec":"Gửi Thông báo thu hồi đất đến từng người có đất thu hồi, chủ sở hữu tài sản, người có quyền lợi/nghĩa vụ liên quan; niêm yết thông báo và danh sách người có đất thu hồi tại trụ sở UBND cấp xã và địa điểm sinh hoạt chung khu dân cư","nguoi":"UBND cấp xã nơi có đất thu hồi","thoigian":"Không quá 03 ngày làm việc, sau khi Thông báo thu hồi đất được ban hành","thamquyen":"UBND cấp xã","ketqua":"Thông báo đã gửi/niêm yết; trường hợp không liên lạc được thì đăng báo trung ương+cấp tỉnh 3 số liên tiếp, phát thanh/truyền hình 3 lần/3 ngày liên tiếp, niêm yết và đăng Cổng TTĐT — không phải gửi lại","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.3b; NQ 254/2025/QH15, Điều 3 khoản 9 điểm a"},{"viec":"Ban hành Quyết định thành lập Hội đồng bồi thường, hỗ trợ, tái định cư cho từng dự án","nguoi":"Chủ tịch UBND cấp xã","thoigian":"Ngay sau khi có kế hoạch thu hồi đất/thông báo thu hồi đất","thamquyen":"Chủ tịch UBND cấp xã (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Quyết định thành lập Hội đồng bồi thường, hỗ trợ, tái định cư","canvu":"QĐ 50/2026/QĐ-UBND, Điều 3 khoản 1 (căn cứ điểm c khoản 2 Điều 86 Luật Đất đai 2024)"}],"note":"Toàn bộ chuỗi thẩm quyền GPMB chỉ được phân cấp cho Chủ tịch UBND cấp xã theo QĐ 50/2026/QĐ-UBND, CÓ HIỆU LỰC TỪ 30/6/2026; các mốc THỜI GIAN theo ngày làm việc trong bảng trên áp dụng theo QĐ 59/2026/QĐ-UBND, có hiệu lực TỪ 23/7/2026 (hồ sơ nộp trước ngày này tiếp tục theo trình tự cũ). Tại các xã miền núi, biên giới, đặc khu Cồn Cỏ, xã khó khăn/đặc biệt khó khăn: cộng thêm 07 ngày làm việc cho mỗi mốc thời gian."},{"id":"gd2","title":"Giai đoạn II — Kiểm kê, kiểm đếm đất đai và tài sản","steps":[{"viec":"Điều tra, khảo sát, ghi nhận hiện trạng, đo đạc, kiểm đếm, thống kê, phân loại diện tích đất và tài sản gắn liền với đất thu hồi; xác định nguồn gốc đất và tài sản","nguoi":"Tổ chức làm nhiệm vụ bồi thường chủ trì, phối hợp UBND cấp xã, các cơ quan liên quan và người có đất thu hồi (riêng xác định nguồn gốc đất: UBND cấp xã chủ trì, phối hợp Tổ chức bồi thường)","thoigian":"Theo kế hoạch, có thông báo trước cho từng hộ/tổ chức","thamquyen":"Tổ chức làm nhiệm vụ bồi thường chủ trì","ketqua":"Biên bản kiểm kê hiện trạng (có xác nhận của người có đất thu hồi); hồ sơ xác định nguồn gốc đất; thống kê thiệt hại thực tế, người có quyền lợi/nghĩa vụ liên quan, nguyện vọng tái định cư/chuyển đổi nghề","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.4a,b; QĐ 10/2026/QĐ-UBND (giấy tờ về QSDĐ trước 15/10/1993); Điều 137 Luật Đất đai 2024"},{"viec":"Trường hợp người có đất/chủ sở hữu tài sản không phối hợp kiểm đếm: vận động, thuyết phục bằng văn bản; nếu vẫn không phối hợp thì ban hành quyết định kiểm đếm bắt buộc; nếu tiếp tục không chấp hành thì ban hành quyết định cưỡng chế thực hiện kiểm đếm bắt buộc","nguoi":"UBND cấp xã chủ trì, phối hợp Ủy ban MTTQ cấp xã và Tổ chức làm nhiệm vụ bồi thường (vận động); Chủ tịch UBND cấp xã (ban hành các quyết định)","thoigian":"Vận động, thuyết phục: không quá 10 ngày làm việc; quá 07 ngày làm việc kể từ khi kết thúc vận động mà vẫn không phối hợp → ban hành QĐ kiểm đếm bắt buộc; nếu không chấp hành QĐ kiểm đếm bắt buộc → ban hành QĐ cưỡng chế thực hiện kiểm đếm bắt buộc","thamquyen":"Chủ tịch UBND cấp xã (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Biên bản vận động; Quyết định kiểm đếm bắt buộc; Quyết định cưỡng chế thực hiện kiểm đếm bắt buộc; Biên bản kiểm đếm","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.4c; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 4 (căn cứ điểm đ khoản 2 Điều 87, khoản 3 Điều 88 Luật Đất đai 2024; khoản 1 Điều 36 NĐ 102/2024/NĐ-CP)"}],"note":"Biên bản kiểm kê phải có xác nhận của người có đất bị thu hồi. Trình tự vận động–kiểm đếm bắt buộc–cưỡng chế kiểm đếm là 03 bước tách biệt với mốc thời gian cụ thể (10 ngày làm việc vận động; +07 ngày làm việc trước khi ra QĐ kiểm đếm bắt buộc) theo QĐ 59/2026/QĐ-UBND — không được rút ngắn hoặc gộp bước."},{"id":"gd3","title":"Giai đoạn III — Xác định giá đất, đơn giá tài sản và lập phương án bồi thường","steps":[{"viec":"Xác định hệ số điều chỉnh giá đất K = Ktt × Kqh × Kytk và giá đất cụ thể làm căn cứ tính bồi thường về đất","nguoi":"Hội đồng thẩm định giá đất cụ thể; tổ chức tư vấn xác định giá đất (nếu thuê)","thoigian":"Theo tiến độ dự án; QĐ 52/2026/QĐ-UBND chỉ có hiệu lực 10/7/2026 – 31/12/2026 (ban hành lại hằng năm)","thamquyen":"Chủ tịch UBND cấp xã quyết định thành lập Hội đồng thẩm định giá đất cụ thể và quyết định giá đất cụ thể (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026); HĐND tỉnh ban hành Bảng giá đất (NQ 12/2025/NQ-HĐND); UBND tỉnh ban hành hệ số K hằng năm","ketqua":"Quyết định giá đất cụ thể; hồ sơ tính Ktt/Kqh/Kytk cho từng thửa đất","canvu":"QĐ 52/2026/QĐ-UBND, Điều 3-6: Ktt=1,0 đối với đất tại Phụ lục I,III,IV,V,VI NQ 12/2025/NQ-HĐND, hoặc tra Phụ lục hệ số biến động thị trường theo từng tuyến đường (đối với đất tại Phụ lục II); Kqh=1,00-1,30 theo hệ số sử dụng đất (hoặc 1,3+(X-12)×0,05 nếu HSSDĐ≥13,0 lần); Kytk=1,0 (cố định); QĐ 50/2026/QĐ-UBND, Điều 3 khoản 6, 7, 8"},{"viec":"Trường hợp áp dụng phương pháp thặng dư để xác định giá đất cụ thể (dự án đô thị/khu dân cư/thương mại dịch vụ/công nghiệp quy mô lớn): áp dụng đúng các chỉ tiêu chi phí phát triển và yếu tố ảnh hưởng đến giá đất theo quy mô dự án","nguoi":"Tổ chức tư vấn xác định giá đất; Hội đồng thẩm định giá đất cụ thể","thoigian":"Theo tiến độ dự án","thamquyen":"Hội đồng thẩm định giá đất cụ thể thẩm định; Chủ tịch UBND cấp xã quyết định (đối với trường hợp thuộc thẩm quyền)","ketqua":"Báo cáo thẩm định giá đất theo phương pháp thặng dư","canvu":"QĐ 21/2026/QĐ-UBND, Điều 2-4: chi phí tiếp thị/bán hàng cố định 2% x tổng doanh thu; chi phí quản lý vận hành 10% (TMDV/căn hộ cao tầng/văn phòng), 35% (du lịch), 5% (đất công cộng có mục đích kinh doanh); chi phí lãi vay + lợi nhuận nhà đầu tư cố định 15%; các yếu tố ảnh hưởng giá đất có mức chênh lệch tối đa 15%-40% tùy yếu tố"},{"viec":"Áp dụng đơn giá bồi thường thiệt hại thực tế về nhà, nhà ở, công trình xây dựng gắn liền với đất theo hệ số khu vực K (1,0 - 1,3), bù trừ chênh lệch chiều cao/kết cấu thực tế, hỗ trợ độ sâu móng nhà bị ảnh hưởng","nguoi":"Tổ chức làm nhiệm vụ bồi thường, giải phóng mặt bằng (có thể thuê đơn vị tư vấn lập dự toán đối với nhà cấp đặc biệt, cấp I, II hoặc kết cấu đặc biệt)","thoigian":"Ngay sau khi có kết quả kiểm kê","thamquyen":"Tổ chức làm nhiệm vụ bồi thường lập; cơ quan chức năng quản lý đất đai thẩm định; Chủ tịch UBND cấp xã phê duyệt trong phương án chung","ketqua":"Bảng tính chi tiết giá trị bồi thường tài sản, công trình cho từng trường hợp","canvu":"QĐ 23/2026/QĐ-UBND, Điều 3, Điều 6, Phụ lục I và Phụ lục IV (mục 1.1, 1.6-1.13); QĐ 30/2026/QĐ-UBND, Điều 7, Điều 9"},{"viec":"Tính bồi thường, hỗ trợ mồ mả (chi phí đào cất bốc, chi phí môi trường theo thời gian chôn cất, hỗ trợ đặc thù mộ tiền khai khẩn/đầu họ/đầu phái/đầu chi) và chi phí di chuyển tài sản (tháo dỡ, lắp đặt, di chuyển theo cự ly)","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Ngay sau khi có kết quả kiểm kê","thamquyen":"Tổ chức làm nhiệm vụ bồi thường lập; Chủ tịch UBND cấp xã phê duyệt trong phương án chung","ketqua":"Bảng tính chi phí bồi thường/hỗ trợ mồ mả và chi phí di chuyển tài sản cho từng hộ","canvu":"QĐ 23/2026/QĐ-UBND, Điều 4, Điều 5, Phụ lục II, Phụ lục III; QĐ 30/2026/QĐ-UBND, Điều 15 khoản 1"},{"viec":"Xác định điều kiện, tỷ lệ quy đổi đất nông nghiệp/đất ở/đất phi nông nghiệp sang đất ở, đất thương mại dịch vụ tái định cư (đối với trường hợp đủ điều kiện và có nhu cầu)","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Thực hiện song song với lập phương án","thamquyen":"UBND cấp xã báo cáo UBND tỉnh quyết định cho từng dự án cụ thể (trường hợp cấp xã có quỹ đất/quỹ nhà ở tái định cư)","ketqua":"Bảng xác định diện tích đất ở/đất thương mại dịch vụ được quy đổi cho từng hộ đủ điều kiện","canvu":"QĐ 30/2026/QĐ-UBND, Điều 3 (đất nông nghiệp → đất ở, tỷ lệ 0,06 và 0,015 lần), Điều 4 (đất ở → đất thương mại dịch vụ, tỷ lệ 1,5 lần), Điều 5 (đất phi nông nghiệp không phải đất ở → đất ở, tỷ lệ 0,15 lần)"},{"viec":"Xác định suất tái định cư tối thiểu bằng đất ở hoặc bằng tiền, mức hỗ trợ tự lo chỗ ở, và các khoản hỗ trợ khác (ổn định đời sống/sản xuất, đào tạo chuyển đổi nghề, thuê nhà tạm cư, lắp đặt điện/nước/viễn thông, thiết kế nhà mới, hộ nghèo, đối tượng chính sách...)","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Thực hiện song song với lập phương án","thamquyen":"Tổ chức làm nhiệm vụ bồi thường lập; UBND cấp xã quyết định biện pháp, mức hỗ trợ khác cho từng dự án cụ thể","ketqua":"Bảng tổng hợp chính sách hỗ trợ cho từng hộ/tổ chức","canvu":"QĐ 30/2026/QĐ-UBND, Điều 6, Điều 11, Điều 13, Điều 14, Điều 15"},{"viec":"Lập phương án bồi thường, hỗ trợ, tái định cư (tổng hợp toàn bộ nội dung trên)","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Sau khi hoàn tất các bước trên","thamquyen":"Tổ chức làm nhiệm vụ bồi thường lập, trình cơ quan có chức năng quản lý đất đai thẩm định trước khi trình UBND cấp xã phê duyệt","ketqua":"Dự thảo phương án bồi thường, hỗ trợ, tái định cư","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.5"}],"note":"Hệ số K = Ktt × Kqh × Kytk (QĐ 52/2026/QĐ-UBND) chỉ có hiệu lực từ 10/7/2026 đến hết 31/12/2026 — phải kiểm tra hiệu lực hằng năm. Ktt tra theo Phụ lục 169 trang (theo từng tuyến đường) nếu đất thuộc Phụ lục II của Bảng giá đất (NQ 12/2025/NQ-HĐND), hoặc = 1,0 nếu thuộc các Phụ lục còn lại; Kytk luôn cố định = 1,0. LƯU Ý: hệ số K này (tính giá ĐẤT) hoàn toàn khác với hệ số khu vực K = 1,0–1,3 của QĐ 23/2026/QĐ-UBND (tính đơn giá bồi thường TÀI SẢN) — không được nhầm lẫn hai hệ số K."},{"id":"gd4","title":"Giai đoạn IV — Niêm yết, lấy ý kiến và đối thoại về phương án","steps":[{"viec":"Niêm yết công khai dự thảo phương án bồi thường, hỗ trợ, tái định cư tại trụ sở UBND cấp xã, địa điểm sinh hoạt chung của khu dân cư nơi có đất thu hồi và đăng tải trên Cổng thông tin điện tử của UBND cấp xã","nguoi":"Tổ chức làm nhiệm vụ bồi thường phối hợp UBND cấp xã","thoigian":"10 ngày","thamquyen":"UBND cấp xã","ketqua":"Niêm yết công khai phương án tại các địa điểm và trên Cổng TTĐT cấp xã","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.6; NQ 254/2025/QH15, Điều 3 khoản 9 điểm b"},{"viec":"Tổ chức lấy ý kiến về phương án theo hình thức họp trực tiếp với người dân trong khu vực có đất thu hồi (người vắng mặt có lý do chính đáng thì gửi ý kiến bằng văn bản); lập biên bản ghi rõ số lượng ý kiến đồng ý/không đồng ý/ý kiến khác, có xác nhận của đại diện UBND cấp xã và đại diện người có đất thu hồi","nguoi":"Tổ chức làm nhiệm vụ bồi thường phối hợp UBND cấp xã","thoigian":"Ngay sau khi hết thời hạn niêm yết công khai","thamquyen":"UBND cấp xã chủ trì","ketqua":"Biên bản lấy ý kiến (số liệu đồng ý/không đồng ý/khác)","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.7 đoạn 1-2"},{"viec":"Tổ chức đối thoại (nếu còn ý kiến không đồng ý) và tiếp thu, giải trình ý kiến góp ý; hoàn chỉnh phương án để trình cơ quan có thẩm quyền","nguoi":"Tổ chức làm nhiệm vụ bồi thường phối hợp UBND cấp xã","thoigian":"Không quá 20 ngày làm việc kể từ ngày tổ chức lấy ý kiến (trong phạm vi trần không quá 30 ngày theo NQ 254/2025/QH15)","thamquyen":"UBND cấp xã chủ trì","ketqua":"Biên bản đối thoại; phương án đã hoàn chỉnh sau tiếp thu ý kiến","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.7 đoạn 3; NQ 254/2025/QH15, Điều 3 khoản 9 điểm b"}],"note":"Thời hạn niêm yết công khai phương án là 10 ngày (không phải 10 ngày làm việc). QĐ 59/2026/QĐ-UBND quy định việc lấy ý kiến bằng họp trực tiếp diễn ra NGAY SAU KHI hết niêm yết, sau đó mới tính mốc 20 ngày làm việc cho bước đối thoại/hoàn chỉnh phương án — đây là 2 bước tách biệt, không được gộp chung thành một mốc 30 ngày như cách hiểu trước đây."},{"id":"gd5","title":"Giai đoạn V — Thẩm định, phê duyệt phương án và quyết định thu hồi đất","steps":[{"viec":"Thẩm định phương án bồi thường, hỗ trợ, tái định cư (nội dung: tuân thủ pháp luật về bồi thường; trình tự, thủ tục; các nội dung khác liên quan)","nguoi":"Cơ quan có chức năng quản lý đất đai cấp xã chủ trì, phối hợp các cơ quan liên quan","thoigian":"Không quá 20 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ","thamquyen":"Cơ quan quản lý đất đai cấp xã thẩm định trước khi trình Chủ tịch UBND cấp xã phê duyệt","ketqua":"Báo cáo thẩm định phương án bồi thường, hỗ trợ, tái định cư","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.8"},{"viec":"Quyết định phê duyệt phương án bồi thường, hỗ trợ, tái định cư","nguoi":"Chủ tịch UBND cấp xã","thoigian":"Không quá 03 ngày làm việc kể từ ngày nhận được hồ sơ và tờ trình của cơ quan quản lý đất đai cấp xã","thamquyen":"Chủ tịch UBND cấp xã (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Quyết định phê duyệt phương án bồi thường, hỗ trợ, tái định cư","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.9; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 3"},{"viec":"Phổ biến, niêm yết công khai Quyết định phê duyệt phương án bồi thường, hỗ trợ, tái định cư tại trụ sở UBND cấp xã và địa điểm sinh hoạt chung khu dân cư","nguoi":"Tổ chức làm nhiệm vụ bồi thường phối hợp UBND cấp xã","thoigian":"Sau khi có Quyết định phê duyệt","thamquyen":"UBND cấp xã","ketqua":"Niêm yết công khai Quyết định phê duyệt phương án","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.10"},{"viec":"Gửi phương án bồi thường, hỗ trợ, tái định cư đã phê duyệt đến từng người có đất thu hồi, chủ sở hữu tài sản, người có quyền lợi/nghĩa vụ liên quan — ghi rõ mức bồi thường, hỗ trợ, bố trí nhà/đất TĐC (nếu có), thời gian/địa điểm chi trả, thời gian bố trí TĐC và thời gian bàn giao đất","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Không quá 03 ngày làm việc kể từ ngày nhận được Quyết định phê duyệt phương án","thamquyen":"Tổ chức làm nhiệm vụ bồi thường thực hiện","ketqua":"Văn bản/thông báo phương án đã phê duyệt gửi đến từng hộ, có ghi rõ mốc thời gian cụ thể","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.11"},{"viec":"Ban hành Quyết định thu hồi đất đối với từng người có đất thu hồi","nguoi":"Chủ tịch UBND cấp xã","thoigian":"Tính từ thời điểm gửi thông báo thu hồi đất: chậm nhất 60 ngày (đất nông nghiệp)/120 ngày (đất phi nông nghiệp), trừ trường hợp khoản 2 Điều 85 Luật Đất đai; nếu người có đất đồng ý thu hồi sớm thì không cần chờ hết hạn (lập biên bản xác nhận giữa 5 bên: cơ quan quản lý đất đai cấp xã, Tổ chức bồi thường, người có đất thu hồi, chủ sở hữu tài sản, người có quyền lợi/nghĩa vụ liên quan)","thamquyen":"Chủ tịch UBND cấp xã, theo khoản 5 Điều 87 Luật Đất đai 2024, trong phạm vi khoản 12, 13 Điều 3 QĐ 50/2026/QĐ-UBND","ketqua":"Quyết định thu hồi đất (ban hành riêng cho từng trường hợp)","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.13a; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 12, 13; NQ 254/2025/QH15, Điều 3 khoản 3, khoản 5, khoản 10"},{"viec":"Trường hợp người có đất thu hồi không đồng ý hoặc không phối hợp thực hiện phương án bồi thường đã phê duyệt: vận động, thuyết phục bằng văn bản; nếu vẫn không đồng ý/phối hợp thì VẪN BAN HÀNH quyết định thu hồi đất","nguoi":"UBND cấp xã chủ trì, phối hợp Ủy ban MTTQ cấp xã và Tổ chức làm nhiệm vụ bồi thường","thoigian":"Vận động, thuyết phục: không quá 07 ngày làm việc; quá 07 ngày làm việc kể từ khi kết thúc vận động mà vẫn không đồng ý/phối hợp → ban hành quyết định thu hồi đất","thamquyen":"Cơ quan, người có thẩm quyền cấp xã ban hành quyết định thu hồi đất dù chưa đạt được sự đồng thuận","ketqua":"Biên bản vận động; Quyết định thu hồi đất","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.13b; điểm a, b khoản 6 Điều 87 Luật Đất đai 2024"}],"note":"QĐ 59/2026/QĐ-UBND làm rõ: việc người dân KHÔNG ĐỒNG Ý với phương án KHÔNG ngăn việc ban hành quyết định thu hồi đất (chỉ cần đã vận động đủ 07+07 ngày làm việc theo đúng trình tự) — quyết định thu hồi đất và việc CƯỠNG CHẾ là hai bước khác nhau: cưỡng chế chỉ đặt ra ở bước sau, khi người dân không chịu BÀN GIAO đất sau khi đã có quyết định thu hồi đất hợp lệ (xem Giai đoạn VII). Thẩm quyền của Chủ tịch UBND cấp xã CHỈ giới hạn trong phạm vi khoản 12, 13 Điều 3 QĐ 50/2026/QĐ-UBND; riêng khoản 13 loại trừ trường hợp đã được UBND tỉnh giao đất, cho thuê đất trước 30/6/2026."},{"id":"gd6","title":"Giai đoạn VI — Chi trả bồi thường, hỗ trợ và bố trí tái định cư","steps":[{"viec":"Thực hiện việc bồi thường, hỗ trợ, bố trí tái định cư theo phương án đã được phê duyệt: chi trả tiền bồi thường, hỗ trợ về đất, tài sản, mồ mả, di chuyển tài sản, tạm cư, thưởng bàn giao mặt bằng...; riêng dự án thu hồi phần diện tích còn lại theo cơ chế thỏa thuận: chi trả thêm tiền chênh lệch TRƯỚC KHI quyết định thu hồi đất","nguoi":"Tổ chức làm nhiệm vụ bồi thường phối hợp cơ quan tài chính/Kho bạc Nhà nước; chủ đầu tư (đối với khoản tiền chênh lệch)","thoigian":"Không quá 20 ngày làm việc kể từ ngày Quyết định phê duyệt phương án bồi thường, hỗ trợ, tái định cư có hiệu lực thi hành","thamquyen":"Chủ tịch UBND cấp xã chỉ đạo chi trả","ketqua":"Chứng từ chi trả, biên nhận của hộ dân/tổ chức","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.12; QĐ 30/2026/QĐ-UBND, Điều 14 khoản 3; QĐ 23/2026/QĐ-UBND Phụ lục I-III; NĐ 49/2026/NĐ-CP, Điều 3 khoản 4 (công thức Ttb, Tpa, Tcl=Ttb-Tpa)"},{"viec":"Giao đất/nhà ở tái định cư (suất tối thiểu theo khu vực), quyết định giá bán nhà ở tái định cư, hoặc chi trả hỗ trợ tự lo chỗ ở (10% hoặc 8% giá trị bồi thường đất ở, tối thiểu 100 hoặc 80 triệu đồng/hộ)","nguoi":"Tổ chức làm nhiệm vụ bồi thường, bộ phận quản lý đất đai cấp xã","thoigian":"Theo tiến độ hạ tầng khu tái định cư; UBND cấp xã báo cáo UBND tỉnh quyết định nếu bố trí TĐC ngoài địa bàn xã","thamquyen":"Chủ tịch UBND cấp xã phê duyệt phương án bồi thường kèm quyết định giao đất TĐC; Chủ tịch UBND cấp xã quyết định giá bán nhà ở tái định cư (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Quyết định giao đất/nhà ở tái định cư, quyết định giá bán nhà TĐC hoặc chứng từ chi trả hỗ trợ tự lo chỗ ở","canvu":"QĐ 30/2026/QĐ-UBND, Điều 6 khoản 1, 2, 4; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 9 (căn cứ khoản 3 Điều 111 Luật Đất đai 2024)"},{"viec":"Chi trả các khoản hỗ trợ khác: ổn định đời sống/sản xuất kinh doanh, đào tạo chuyển đổi nghề, thuê nhà tạm cư, lắp đặt điện/nước/viễn thông, thiết kế nhà mới, hộ nghèo, đối tượng chính sách, tài sản thủy sản, cây/hoa màu không đủ điều kiện bồi thường...","nguoi":"Tổ chức làm nhiệm vụ bồi thường","thoigian":"Theo phương án được duyệt","thamquyen":"Chủ tịch UBND cấp xã phê duyệt biện pháp, mức hỗ trợ khác cho từng dự án","ketqua":"Chứng từ chi trả các khoản hỗ trợ","canvu":"QĐ 30/2026/QĐ-UBND, Điều 11, Điều 13, Điều 14, Điều 15"},{"viec":"Giải quyết di dời mồ mả, chi trả chi phí đào cất bốc, chi phí môi trường và hỗ trợ tâm linh đặc thù","nguoi":"Tổ chức làm nhiệm vụ bồi thường, đại diện dòng họ/gia đình","thoigian":"Trước khi thu hồi đất khu vực có mộ","thamquyen":"Chủ tịch UBND cấp xã phê duyệt kinh phí; trường hợp lăng mộ xây cầu kỳ, kỹ thuật/mỹ thuật cao chưa có trong bộ đơn giá thì lập dự toán trình thẩm định riêng","ketqua":"Biên bản di dời mồ mả, chứng từ chi trả","canvu":"QĐ 23/2026/QĐ-UBND, Điều 4, Phụ lục II, Phụ lục IV mục 3; QĐ 30/2026/QĐ-UBND, Điều 15 khoản 1"}],"note":"Cần phân biệt rõ hai mức hỗ trợ tự lo chỗ ở (10%/tối thiểu 100 triệu đồng đối với hộ trên 4 khẩu bị thu hồi diện tích ≥ hạn mức; 8%/tối thiểu 80 triệu đồng đối với các trường hợp còn lại) và mức thưởng bàn giao mặt bằng trước hạn (8% hoặc 10% trên giá trị bồi thường TÀI SẢN TRÊN ĐẤT, không gồm giá trị đất, tối đa 20 triệu đồng/đối tượng). Mốc '20 ngày làm việc' để hoàn tất chi trả tính từ ngày Quyết định phê duyệt phương án CÓ HIỆU LỰC (không phải ngày ký) — cần kiểm tra rõ ngày hiệu lực ghi trong quyết định."},{"id":"gd7","title":"Giai đoạn VII — Bàn giao đất và cưỡng chế thu hồi đất (trường hợp không đồng thuận)","steps":[{"viec":"Người có đất thu hồi, chủ sở hữu tài sản, người có quyền lợi/nghĩa vụ liên quan có trách nhiệm bàn giao đất cho Tổ chức làm nhiệm vụ bồi thường sau khi đã có Quyết định thu hồi đất","nguoi":"Người có đất thu hồi","thoigian":"Theo thời hạn ghi trong phương án/quyết định thu hồi đất","thamquyen":"—","ketqua":"Bàn giao đất đúng hạn","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.13c dẫn chiếu khoản 7 Điều 87 Luật Đất đai 2024"},{"viec":"Trường hợp không bàn giao đất: vận động, thuyết phục bằng văn bản để người có đất bàn giao đất","nguoi":"UBND cấp xã chủ trì, phối hợp Ủy ban MTTQ cấp xã và Tổ chức làm nhiệm vụ bồi thường","thoigian":"Không quá 07 ngày làm việc","thamquyen":"UBND cấp xã chủ trì","ketqua":"Biên bản vận động (trường hợp không thành)","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.13c1; điểm a khoản 7 Điều 87 Luật Đất đai 2024"},{"viec":"Quá thời hạn vận động mà người có đất thu hồi vẫn không chấp hành bàn giao đất: ban hành Quyết định cưỡng chế thu hồi đất và tổ chức thực hiện cưỡng chế","nguoi":"Chủ tịch UBND cấp xã; UBND cấp xã tổ chức thực hiện","thoigian":"Quá 07 ngày làm việc kể từ ngày kết thúc vận động, thuyết phục mà vẫn không chấp hành","thamquyen":"Chủ tịch UBND cấp xã (thẩm quyền phân cấp từ UBND tỉnh, áp dụng từ 30/6/2026)","ketqua":"Quyết định cưỡng chế thu hồi đất; Quyết định thành lập Ban cưỡng chế thu hồi đất; phương án và kinh phí cưỡng chế được phê duyệt; Biên bản cưỡng chế","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.13c2; điểm b khoản 7 Điều 87 và Điều 89 Luật Đất đai 2024; QĐ 50/2026/QĐ-UBND, Điều 3 khoản 5"},{"viec":"Riêng đối với thu hồi phần diện tích còn lại của dự án thực hiện theo cơ chế thỏa thuận nhận chuyển nhượng QSDĐ (đã hết thời hạn/gia hạn thỏa thuận): tổ chức kinh tế lập hồ sơ (bảng tổng hợp kết quả thỏa thuận đạt trên 75% diện tích và trên 75% số người sử dụng đất; bảng tổng hợp người chưa thỏa thuận; văn bản đề nghị triển khai dự án; văn bản đề nghị thu hồi đất theo Mẫu số 20) gửi UBND cấp xã; UBND cấp xã họp với người sử dụng đất để tiếp tục thỏa thuận lần cuối; báo cáo UBND tỉnh, Sở NN&MT, Sở Tài chính; hoàn tất chủ trương đầu tư; UBND cấp xã lập hồ sơ trình HĐND tỉnh thông qua việc thu hồi phần diện tích còn lại","nguoi":"Tổ chức kinh tế (chủ đầu tư) lập hồ sơ, chịu trách nhiệm chứng minh điều kiện 75%; UBND cấp xã chủ trì họp và lập hồ sơ trình","thoigian":"UBND cấp xã tổ chức họp trong không quá 07 ngày làm việc kể từ ngày nhận văn bản đề nghị của tổ chức kinh tế","thamquyen":"Hội đồng nhân dân cấp tỉnh xem xét, thông qua việc thu hồi phần diện tích còn lại để giao đất, cho thuê đất cho chủ đầu tư","ketqua":"Nghị quyết của HĐND cấp tỉnh thông qua việc thu hồi phần diện tích còn lại (nếu đủ điều kiện)","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục V.1; NQ 254/2025/QH15, Điều 3 khoản 2 điểm b — xem chi tiết Phụ lục B3"}],"note":"QĐ 59/2026/QĐ-UBND làm rõ trình tự: việc thu hồi đất (Giai đoạn V) và việc cưỡng chế (Giai đoạn VII) là HAI bước riêng biệt, cách nhau bởi nghĩa vụ BÀN GIAO ĐẤT — quyết định thu hồi đất được ban hành dù dân chưa đồng ý (sau 07+07 ngày làm việc vận động), nhưng CƯỠNG CHẾ chỉ áp dụng khi, sau đó, người dân tiếp tục không chịu bàn giao đất (thêm 07+07 ngày làm việc vận động nữa). Cơ chế 'thu hồi phần diện tích còn lại' (75% diện tích + 75% số người) là một thủ tục hoàn toàn tách biệt, không phải là điều kiện cưỡng chế thông thường, và thẩm quyền quyết định thuộc HĐND cấp tỉnh — không thuộc thẩm quyền phân cấp cho Chủ tịch UBND cấp xã."},{"id":"gd8","title":"Giai đoạn VIII — Bàn giao mặt bằng, quản lý đất thu hồi, quyết toán và lưu trữ hồ sơ","steps":[{"viec":"Nhận bàn giao mặt bằng sạch; lập biên bản bàn giao","nguoi":"Chủ đầu tư dự án, Tổ chức làm nhiệm vụ bồi thường","thoigian":"Ngay sau khi hộ dân di dời xong hoặc ngay sau khi cưỡng chế","thamquyen":"UBND cấp xã xác nhận","ketqua":"Biên bản bàn giao mặt bằng","canvu":"—"},{"viec":"Quản lý đất đã được thu hồi trong khi chưa giao đất, cho thuê đất cho chủ đầu tư","nguoi":"Tổ chức phát triển quỹ đất, Chi nhánh Tổ chức phát triển quỹ đất khu vực, UBND cấp xã","thoigian":"Kể từ khi hoàn tất thu hồi đất cho đến khi giao đất/cho thuê đất","thamquyen":"Tổ chức phát triển quỹ đất/UBND cấp xã chịu trách nhiệm quản lý","ketqua":"Đất được quản lý chặt chẽ, tránh lấn chiếm, tái vi phạm","canvu":"QĐ 59/2026/QĐ-UBND, Phụ lục I Mục IV.14 (căn cứ khoản 5 Điều 86 Luật Đất đai 2024)"},{"viec":"Cấp/chỉnh lý Giấy chứng nhận quyền sử dụng đất cho người bị thu hồi một phần thửa đất, hoặc cho người được giao đất tái định cư","nguoi":"Tổ chức làm nhiệm vụ bồi thường; cơ quan đăng ký đất đai","thoigian":"Sau khi hoàn tất bồi thường/giao đất tái định cư","thamquyen":"Cơ quan quản lý đất đai cấp xã thực hiện thủ tục theo thẩm quyền; kinh phí theo đơn giá dịch vụ công tại thời điểm phê duyệt phương án","ketqua":"Giấy chứng nhận QSDĐ được cấp mới/chỉnh lý","canvu":"QĐ 30/2026/QĐ-UBND, Điều 15 khoản 2"},{"viec":"Quyết toán kinh phí bồi thường, hỗ trợ, tái định cư của toàn dự án","nguoi":"Tổ chức làm nhiệm vụ bồi thường, cơ quan tài chính cấp xã","thoigian":"Sau khi hoàn tất chi trả toàn bộ dự án","thamquyen":"Chủ tịch UBND cấp xã phê duyệt quyết toán","ketqua":"Báo cáo quyết toán kinh phí GPMB","canvu":"—"},{"viec":"Lưu trữ hồ sơ pháp lý điện tử và bản giấy của toàn bộ quy trình","nguoi":"Tổ chức làm nhiệm vụ bồi thường / Văn phòng UBND cấp xã","thoigian":"Thường xuyên, xuyên suốt quá trình thực hiện","thamquyen":"UBND cấp xã","ketqua":"Hồ sơ lưu trữ đầy đủ, phục vụ công tác thanh tra, kiểm tra, giải quyết khiếu nại về sau","canvu":"—"}],"note":"Việc cấp/chỉnh lý Giấy chứng nhận và quyết toán kinh phí phải hoàn tất trước khi kết thúc hồ sơ dự án; hồ sơ pháp lý cần lưu trữ đầy đủ, có hệ thống để đối chiếu khi có thanh tra, kiểm tra hoặc khiếu nại phát sinh sau bàn giao. Trong thời gian đất đã thu hồi nhưng chưa giao/cho thuê cho chủ đầu tư, trách nhiệm quản lý thuộc Tổ chức phát triển quỹ đất hoặc UBND cấp xã — cần bàn giao rõ trách nhiệm để tránh bỏ trống, lấn chiếm."}],"appendices":[{"id":"pla","title":"Phụ lục A — Hạn mức giao đất liên quan","intro":"Các hạn mức dưới đây (QĐ 07/2026, 08/2026, 09/2026/QĐ-UBND) không trực tiếp thuộc quy trình bồi thường nhưng thường được dùng làm căn cứ xác định điều kiện bồi thường về đất, diện tích công trình được bồi thường, hoặc hạn mức giao đất tái định cư/đất tôn giáo:","bullets":["Hạn mức giao đất ở cho cá nhân (QĐ 07/2026, Điều 7): 400 m² tại các xã miền núi/biên giới khó khăn (Dân Hóa, Minh Hóa, Kim Điền, Tuyên Lâm, Tuyên Sơn, Đồng Lê, Thượng Trạch, Trung Thuần, Kim Phú, Phú Trạch, Phong Nha, Trường Sơn, Kim Ngân, Bến Quan, La Lay, Tà Rụt, Đakrông, Ba Lòng, Hướng Hiệp, Hướng Lập, Hướng Phùng, Khe Sanh, Tân Lập, Lao Bảo, Lìa, A Dơi, Tân Thành); 250 m² tại các xã còn lại và đặc khu Cồn Cỏ; 200 m² tại các phường.","Hạn mức công nhận đất ở cho hộ gia đình, cá nhân sử dụng đất trước 15/10/1993 (QĐ 07/2026, Điều 4): 300-500 m² (sử dụng trước 18/12/1980) hoặc 250-400 m² (sử dụng từ 18/12/1980 đến trước 15/10/1993), tùy khu vực.","Hạn mức nhận chuyển quyền sử dụng đất nông nghiệp của cá nhân (QĐ 07/2026, Điều 6): không quá 10 lần hạn mức giao đất nông nghiệp cho mỗi loại đất.","Diện tích công trình phục vụ trực tiếp sản xuất nông nghiệp trên đất trồng lúa (QĐ 08/2026, Điều 3): không vượt quá 0,1% diện tích khu vực đất trồng lúa và tối đa 1.000 m², xây dựng không quá 03 vị trí khác nhau.","Diện tích đất nông nghiệp (trừ đất trồng lúa) được dùng xây công trình phục vụ sản xuất (QĐ 08/2026, Điều 4): từ không quá 10 m² (thửa dưới 500 m²) đến không quá 500 m² (khu đất từ 300.000 m² trở lên), theo bậc thang diện tích khu đất.","Hạn mức giao đất cho tổ chức tôn giáo, tổ chức tôn giáo trực thuộc (QĐ 09/2026, Điều 3): không vượt quá 5.000 m².","Điều kiện, diện tích tối thiểu tách thửa đất ở (QĐ 04/2026, Điều 3, 4): diện tích tối thiểu 50 m², mặt tiền tối thiểu 4,0 m, chiều sâu tối thiểu 6,0 m; lối đi chung tối thiểu 3,5 m (tách 2-5 thửa) hoặc 4,5 m (tách từ 6 thửa trở lên); đất nông nghiệp khác: 300 m² (cây hằng năm/làm muối), 500 m² (cây lâu năm/nuôi trồng thủy sản), 2.000 m² (rừng sản xuất là rừng trồng)."]},{"id":"plb","title":"Phụ lục B — Điều khoản chuyển tiếp về thu hồi đất, bồi thường, hỗ trợ, tái định cư","intro":"Mốc thời gian áp dụng là NGÀY NGHỊ ĐỊNH SỐ 49/2026/NĐ-CP CÓ HIỆU LỰC THI HÀNH = 31/01/2026 (không phải 01/01/2026 — ngày NQ 254/2025/QH15 có hiệu lực — vì NĐ 49/2026 là văn bản hướng dẫn chi tiết, quy định riêng mốc chuyển tiếp tại Điều 19 của chính Nghị định):","bullets":["Trường hợp đã có quyết định thu hồi đất VÀ quyết định phê duyệt phương án bồi thường trước ngày 31/01/2026: tiếp tục thực hiện theo phương án đã phê duyệt.","Trường hợp trước ngày 31/01/2026 CHƯA có quyết định phê duyệt phương án bồi thường: thực hiện theo Luật Đất đai 2024, Nghị quyết 254/2025/QH15 và Nghị định 49/2026/NĐ-CP.","Dự án còn một phần diện tích chưa phê duyệt phương án trước ngày 31/01/2026: UBND cấp tỉnh xem xét, quyết định lựa chọn MỘT TRONG BA quy định: (a) quy định tại thời điểm đã phê duyệt phương án trước đây; (b) quy định tại thời điểm Luật Đất đai 2024 có hiệu lực; hoặc (c) quy định có hiệu lực từ ngày 31/01/2026.","Thông báo thu hồi đất ban hành theo Luật Đất đai còn hiệu lực sau ngày 31/01/2026 thì tiếp tục thực hiện theo thông báo đã ban hành (không phải ban hành lại)."],"footer":"Căn cứ pháp lý: Nghị định số 49/2026/NĐ-CP, Điều 16 (hiệu lực từ 31/01/2026), Điều 19 (quy định chuyển tiếp). Riêng Chương IV của Nghị định (Điều 14 phân cấp cho UBND tỉnh, Điều 15 trình tự thủ tục) chỉ được thực hiện đến trước ngày 01/3/2027."},{"id":"plb2","title":"Phụ lục B2 — Trình tự các trường hợp ngoại lệ thu hồi đất trước khi phê duyệt phương án","bullets":["Dự án quan trọng quốc gia (yêu cầu đẩy nhanh tiến độ) hoặc dự án đầu tư công khẩn cấp: quyết định thu hồi đất được thực hiện SAU KHI kết thúc thời hạn niêm yết phương án bồi thường (không cần chờ phê duyệt xong phương án).","Dự án được trên 75% người sử dụng đất đồng ý thu hồi đất trước khi phê duyệt phương án: sau khi kết thúc niêm yết, cơ quan có thẩm quyền phải XÁC NHẬN đạt số người sử dụng đất đồng ý để làm căn cứ quyết định thu hồi đất (khác với điều kiện '75% diện tích và 75% số người sử dụng đất đã thỏa thuận' ở Phụ lục B3).","Thu hồi đất trước khi hoàn thành bố trí tái định cư: chỉ thực hiện sau khi phương án đã được phê duyệt VÀ đã hoàn thành bố trí tạm cư hoặc chi trả kinh phí tạm cư."],"footer":"Căn cứ pháp lý: Nghị định 49/2026/NĐ-CP, Phụ lục Mục I.2 (hướng dẫn điểm a, b khoản 3 Điều 3 NQ 254/2025/QH15)."},{"id":"plb3","title":"Phụ lục B3 — Trách nhiệm chứng minh điều kiện \"75% diện tích và 75% số người sử dụng đất\" và tiền chênh lệch giá","bullets":["Việc chứng minh dự án đáp ứng điều kiện thu hồi phần diện tích còn lại (trên 75% diện tích đất và trên 75% số lượng người sử dụng đất) THUỘC TRÁCH NHIỆM CỦA TỔ CHỨC KINH TẾ (chủ đầu tư), không phải của Tổ chức làm nhiệm vụ bồi thường hay UBND cấp xã.","Trước khi thực hiện thủ tục thu hồi phần diện tích còn lại, phải tổ chức họp với người sử dụng đất để TIẾP TỤC THỎA THUẬN lần cuối; đồng thời hoàn tất thủ tục chấp thuận/quyết định chủ trương đầu tư (nếu có) trước khi HĐND cấp tỉnh xem xét thông qua việc thu hồi.","Nếu số tiền theo phương án bồi thường tính trên một đơn vị diện tích THẤP HƠN số tiền trung bình của giá đất đã thỏa thuận (Ttb), người có đất thu hồi được NHẬN THÊM phần chênh lệch (Tcl = Ttb − Tpa). Chủ đầu tư ứng trước kinh phí; số tiền chênh lệch tính vào chi phí đầu tư dự án. Việc chi trả thực hiện TRƯỚC KHI quyết định thu hồi đất."],"footer":"Căn cứ pháp lý: Nghị định 49/2026/NĐ-CP, Điều 3 và Phụ lục Mục I.1 (hướng dẫn điểm b khoản 2, điểm d khoản 13 Điều 3 NQ 254/2025/QH15)."},{"id":"plc","title":"Phụ lục C — Các điểm kiểm soát rủi ro trọng yếu cần đối chiếu trước khi ký/phê duyệt","bullets":["Kiểm tra đúng mốc hiệu lực thẩm quyền: QĐ 50/2026/QĐ-UBND chỉ áp dụng cho hồ sơ TIẾP NHẬN MỚI từ 30/6/2026; hồ sơ đang giải quyết trước đó vẫn theo thẩm quyền cũ (Điều 5 QĐ 50/2026). Đồng thời kiểm tra đúng phạm vi 21 khoản thẩm quyền cụ thể được phân cấp tại Điều 3 QĐ 50/2026.","Kiểm tra đúng mốc thông báo thu hồi đất (60/120 ngày, trừ trường hợp khẩn cấp theo khoản 2 Điều 85 Luật Đất đai) và mốc niêm yết công khai (10 ngày) + đối thoại (không quá 30 ngày kể từ ngày lấy ý kiến).","Kiểm tra điều kiện diện tích tối thiểu và đúng tỷ lệ quy đổi (0,06 lần đất nông nghiệp; 0,015 lần đất rừng sản xuất; 1,5 lần đất ở→đất thương mại dịch vụ; 0,15 lần đất phi nông nghiệp→đất ở) theo QĐ 30/2026/QĐ-UBND.","Phân biệt rõ HAI hệ số K khác nhau: (1) hệ số điều chỉnh giá đất K=Ktt×Kqh×Kytk theo QĐ 52/2026/QĐ-UBND dùng để tính giá ĐẤT; (2) hệ số khu vực K=1,0-1,3 theo QĐ 23/2026/QĐ-UBND dùng để tính đơn giá bồi thường TÀI SẢN, công trình.","Không nhầm lẫn mức hỗ trợ tự lo chỗ ở (10%/8% giá trị bồi thường đất ở) với mức thưởng bàn giao mặt bằng trước hạn (8%/10% giá trị bồi thường TÀI SẢN trên đất, tối đa 20 triệu đồng/đối tượng).","Kiểm tra điều kiện tách thửa tối thiểu khi quy hoạch khu tái định cư (diện tích, mặt tiền, chiều sâu, lối đi chung) theo QĐ 04/2026/QĐ-UBND.","Kiểm tra tính hợp pháp và diện tích công trình phục vụ sản xuất trên đất nông nghiệp/đất lúa trước khi tính bồi thường, đối chiếu QĐ 08/2026/QĐ-UBND.","Đối với dự án theo cơ chế thỏa thuận cần thu hồi phần diện tích còn lại: xác nhận đúng điều kiện kép 'trên 75% diện tích đất VÀ trên 75% số lượng người sử dụng đất' và trình đúng thẩm quyền HĐND cấp tỉnh (không phải cấp xã).","Kiểm tra các trường hợp không được bồi thường về đất khi thu hồi: khoản 1 Điều 107, Điều 217, Điều 81, khoản 1-2 Điều 82 Luật Đất đai; và bổ sung theo Điều 4 Nghị định 49/2026/NĐ-CP (lấn/chiếm đất trụ sở cơ quan, công trình sự nghiệp/công cộng trước 01/7/2014 mà đã có văn bản ngăn chặn nhưng vẫn cố tình vi phạm; lấn/chiếm đất do cơ quan, tổ chức Nhà nước quản lý từ 01/7/2014 trở về sau).","Lưu trữ đầy đủ hồ sơ pháp lý (bản giấy và điện tử) trong suốt quá trình để phục vụ thanh tra, kiểm tra và giải quyết khiếu nại phát sinh."]}]};
+
+const state = { view: "gd1", query: "" };
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function highlight(text, q) {
+  const safe = esc(text);
+  if (!q) return safe;
+  try {
+    const re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
+    return safe.replace(re, "<mark>$1</mark>");
+  } catch(e) { return safe; }
+}
+
+function matches(haystackArr, q) {
+  if (!q) return true;
+  const needle = q.toLowerCase();
+  return haystackArr.some(h => (h || "").toLowerCase().includes(needle));
+}
+
+function renderNav() {
+  const phaseNav = document.getElementById("nav-phases");
+  phaseNav.innerHTML = DATA.phases.map((p, i) =>
+    `<button class="navitem" data-target="${p.id}"><span class="num">${i+1}</span>${p.title.replace(/^Giai đoạn [IVX]+ — /, "")}</button>`
+  ).join("");
+
+  const apNav = document.getElementById("nav-appendices");
+  apNav.innerHTML = DATA.appendices.map((a) =>
+    `<button class="navitem" data-target="${a.id}"><span class="num">▤</span>${a.title.replace(/^Phụ lục [A-Z0-9]+ — /, "")}</button>`
+  ).join("");
+
+  document.querySelectorAll(".navitem[data-target]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.view = btn.dataset.target;
+      state.query = "";
+      document.getElementById("search").value = "";
+      closeSidebar();
+      render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+  });
+}
+
+function setActiveNav() {
+  document.querySelectorAll(".navitem[data-target]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.target === state.view && !state.query);
+  });
+}
+
+function stepCard(step, idx, q) {
+  const canvu = step.canvu && step.canvu !== "—" ? step.canvu : "Không có căn cứ riêng — áp dụng theo quy định chung nêu ở các bước liên quan.";
+  return `
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">${idx+1}</div>
+      <div class="step-viec">${highlight(step.viec, q)}</div>
+    </div>
+    <div class="step-grid">
+      <div class="field"><div class="field-label">Đơn vị / người thực hiện</div><div class="field-val">${highlight(step.nguoi, q)}</div></div>
+      <div class="field"><div class="field-label">Thời gian thực hiện</div><div class="field-val">${highlight(step.thoigian, q)}</div></div>
+      <div class="field"><div class="field-label">Thẩm quyền quyết định</div><div class="field-val">${highlight(step.thamquyen, q)}</div></div>
+      <div class="field"><div class="field-label">Kết quả / sản phẩm</div><div class="field-val">${highlight(step.ketqua, q)}</div></div>
+      <div class="field canvu"><div class="field-label">Căn cứ pháp lý</div><div class="field-val">${highlight(canvu, q)}</div></div>
+    </div>
+  </div>`;
+}
+
+function renderPhase(phase, q) {
+  const header = `
+    <div class="phase-header">
+      <h2>${phase.title}</h2>
+      <div class="count">${phase.steps.length} bước thực hiện</div>
+    </div>
+    <div class="note-box"><span class="icon">⚠</span><div><b>Lưu ý:</b> ${highlight(phase.note, q)}</div></div>
+  `;
+  const steps = phase.steps.map((s, i) => stepCard(s, i, q)).join("");
+  return header + steps;
+}
+
+function renderAppendix(ap, q) {
+  let out = `<div class="phase-header"><h2>${ap.title}</h2></div>`;
+  if (ap.intro) out += `<div class="appendix-intro">${highlight(ap.intro, q)}</div>`;
+  out += `<ul class="bullets">${ap.bullets.map(b => `<li>${highlight(b, q)}</li>`).join("")}</ul>`;
+  if (ap.footer) out += `<div class="appendix-footer">${highlight(ap.footer, q)}</div>`;
+  return out;
+}
+
+function renderSources(q) {
+  let out = `<div class="phase-header"><h2>Căn cứ pháp lý — 15 văn bản gốc đã đối chiếu</h2>
+    <div class="count">Toàn bộ quy trình được rà soát trực tiếp với các văn bản dưới đây</div></div>`;
+  out += `<div class="info-box">${highlight(DATA.authorityNotice, q)}</div>`;
+  out += DATA.sources.map(s => `
+    <div class="source-card">
+      <div class="source-code">${esc(s.code)}</div>
+      <div class="source-desc">${highlight(s.desc, q)}</div>
+    </div>`).join("");
+  out += `<div class="phase-header" style="margin-top:28px;"><h2 style="font-size:17px;">Văn bản liên quan nhưng thuộc quy trình khác</h2></div>`;
+  out += `<div class="note-box"><span class="icon">ⓘ</span><div>${highlight(DATA.relatedNotDifferent, q)}</div></div>`;
+  return out;
+}
+
+function searchAll(q) {
+  const needle = q.toLowerCase();
+  const results = [];
+
+  DATA.phases.forEach(phase => {
+    const hits = phase.steps.filter((s, i) =>
+      matches([s.viec, s.nguoi, s.thoigian, s.thamquyen, s.ketqua, s.canvu], q)
+    ).map((s) => ({ step: s, idx: phase.steps.indexOf(s) }));
+    if (matches([phase.note], q) || hits.length) {
+      results.push({ type: "phase", title: phase.title, hits, noteHit: matches([phase.note], q), note: phase.note });
+    }
+  });
+
+  DATA.appendices.forEach(ap => {
+    const hits = ap.bullets.filter(b => matches([b], q));
+    const introHit = ap.intro && matches([ap.intro], q);
+    if (hits.length || introHit) {
+      results.push({ type: "appendix", title: ap.title, hits, intro: introHit ? ap.intro : null });
+    }
+  });
+
+  const sourceHits = DATA.sources.filter(s => matches([s.code, s.desc], q));
+  if (sourceHits.length) results.push({ type: "sources", hits: sourceHits });
+
+  return results;
+}
+
+function renderSearchResults(q) {
+  const results = searchAll(q);
+  const totalHits = results.reduce((acc, r) => acc + (r.hits ? r.hits.length : 0) + (r.noteHit ? 1 : 0) + (r.intro ? 1 : 0), 0);
+  document.getElementById("searchmeta").textContent = totalHits
+    ? `Tìm thấy ${totalHits} kết quả cho “${q}”`
+    : `Không tìm thấy kết quả cho “${q}”`;
+
+  if (!results.length) {
+    return `<div class="empty-state"><div class="big">Không có kết quả phù hợp</div>Thử một từ khóa khác, ví dụ tên quyết định (QĐ 30), số Điều, hoặc một cụm từ trong nội dung công việc.</div>`;
+  }
+
+  return results.map(r => {
+    if (r.type === "phase") {
+      let inner = `<div class="result-group-title">${esc(r.title)}<span class="line"></span></div>`;
+      if (r.noteHit) inner += `<div class="note-box"><span class="icon">⚠</span><div>${highlight(r.note, q)}</div></div>`;
+      inner += r.hits.map(h => stepCard(h.step, h.idx, q)).join("");
+      return `<div class="result-group">${inner}</div>`;
+    }
+    if (r.type === "appendix") {
+      let inner = `<div class="result-group-title">${esc(r.title)}<span class="line"></span></div>`;
+      if (r.intro) inner += `<div class="appendix-intro">${highlight(r.intro, q)}</div>`;
+      inner += `<ul class="bullets">${r.hits.map(b => `<li>${highlight(b, q)}</li>`).join("")}</ul>`;
+      return `<div class="result-group">${inner}</div>`;
+    }
+    if (r.type === "sources") {
+      let inner = `<div class="result-group-title">Căn cứ pháp lý<span class="line"></span></div>`;
+      inner += r.hits.map(s => `
+        <div class="source-card">
+          <div class="source-code">${esc(s.code)}</div>
+          <div class="source-desc">${highlight(s.desc, q)}</div>
+        </div>`).join("");
+      return `<div class="result-group">${inner}</div>`;
+    }
+    return "";
+  }).join("");
+}
+
+function render() {
+  const content = document.getElementById("content");
+  const q = state.query.trim();
+
+  if (q) {
+    content.innerHTML = renderSearchResults(q);
+    setActiveNav();
+    return;
+  }
+
+  document.getElementById("searchmeta").textContent = "";
+
+  const phase = DATA.phases.find(p => p.id === state.view);
+  if (phase) { content.innerHTML = renderPhase(phase, ""); setActiveNav(); return; }
+
+  const ap = DATA.appendices.find(a => a.id === state.view);
+  if (ap) { content.innerHTML = renderAppendix(ap, ""); setActiveNav(); return; }
+
+  if (state.view === "sources") { content.innerHTML = renderSources(""); setActiveNav(); return; }
+
+  state.view = "gd1";
+  render();
+}
+
+document.getElementById("search").addEventListener("input", (e) => {
+  state.query = e.target.value;
+  render();
+});
+
+function openSidebar() { document.getElementById("sidebar").classList.add("open"); document.getElementById("scrim").classList.add("show"); }
+function closeSidebar() { document.getElementById("sidebar").classList.remove("open"); document.getElementById("scrim").classList.remove("show"); }
+document.getElementById("hamburger").addEventListener("click", openSidebar);
+document.getElementById("scrim").addEventListener("click", closeSidebar);
+
+renderNav();
+render();
+</script>
+</body>
+</html>
