@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Công cụ Tra cứu Đất đai — Quảng Trị</title>
+<style>
+  :root{
+    --navy:#12283f;
+    --navy-2:#1c3a57;
+    --teal:#0e7c7b;
+    --teal-light:#e4f3f2;
+    --primary:var(--teal);
+    --primary-dark:var(--navy);
+    --bg:#f7f6f2;
+    --card:#ffffff;
+    --text:#1b1f23;
+    --muted:#5b6672;
+    --border:#dfe3e6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  header{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    color:#fff;
+    padding:48px 24px 40px;
+    text-align:center;
+  }
+  header h1{
+    margin:0 0 8px;
+    font-size:1.9rem;
+    font-weight:700;
+  }
+  header p{
+    margin:0;
+    font-size:1rem;
+    opacity:0.9;
+  }
+  main{
+    max-width:920px;
+    margin:-24px auto 60px;
+    padding:0 20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:24px;
+    text-decoration:none;
+    color:var(--text);
+    box-shadow:0 2px 6px rgba(18,40,63,0.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(14,124,123,0.18);
+    border-color:var(--teal);
+  }
+  .icon{
+    width:44px;height:44px;
+    border-radius:10px;
+    background:var(--teal-light);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+  }
+  .card h2{
+    margin:0;
+    font-size:1.1rem;
+    color:var(--primary-dark);
+  }
+  .card p{
+    margin:0;
+    font-size:0.92rem;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .arrow{
+    margin-top:auto;
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--primary);
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.82rem;
+    padding-bottom:30px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Công cụ Tra cứu Đất đai</h1>
+  <p>Tổng hợp các ứng dụng tra cứu &amp; tính toán — tỉnh Quảng Trị</p>
+</header>
+
+<main>
+  <div class="grid">
+
+    <a class="card" href="gpmb/">
+      <div class="icon">📋</div>
+      <h2>Quy trình GPMB</h2>
+      <p>Tra cứu các bước, hồ sơ và thời hạn trong quy trình giải phóng mặt bằng.</p>
+      <span class="arrow">Truy cập →</span>
+    </a>
+
+    <a class="card" href="boithuong/">
+      <div class="icon">💰</div>
+      <h2>Đơn giá Bồi thường</h2>
+      <p>Tra cứu đơn giá bồi thường theo QĐ 23/2026/QĐ-UBND tỉnh Quảng Trị.</p>
+      <span class="arrow">Truy cập →</span>
+    </a>
+
+    <a class="card" href="giadat/">
+      <div class="icon">🗺️</div>
+      <h2>Giá đất &amp; Hệ số K</h2>
+      <p>Tra cứu bảng giá đất và hệ số điều chỉnh K áp dụng tại Quảng Trị.</p>
+      <span class="arrow">Truy cập →</span>
+    </a>
+
+    <a class="card" href="daugia/">
+      <div class="icon">🏷️</div>
+      <h2>Thông báo Đấu giá QSDĐ</h2>
+      <p>Thông báo đấu giá quyền sử dụng đất — khu vực Bắc Sông Hiếu giai đoạn 2.</p>
+      <span class="arrow">Truy cập →</span>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  Cập nhật 2026 · Vui lòng đối chiếu với văn bản pháp lý chính thức trước khi sử dụng kết quả tra cứu.
+</footer>
+
+</body>
+</html>
